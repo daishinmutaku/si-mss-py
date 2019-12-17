@@ -3,15 +3,14 @@ import param
 from SI import selection_event as se
 from mpmath import mp
 
-LU_res_list = []
-
 def inference(vecX, result):
     H = generate_eta_mat(result)
     C = generate_c_mat(H)
     Z = generate_z_mat(C, H, vecX)
     interval = generate_interval(C, Z)
-    print(interval)
-
+    selective_p = generate_selective_p(vecX, H, interval)
+    print(selective_p)
+    debug_tau(H, vecX)
 
 def generate_eta_mat(result):
     H = np.zeros((len(result), param.COLOR_RANGE))
@@ -63,7 +62,6 @@ def generate_z_mat(C, H, vecX):
 
 def generate_interval(C, Z):
     LU3 = generate_LU_by_vec(se.vecA3, 0, C, Z)
-    print(LU3)
     LU_list = [LU3]
 
     L = -mp.inf
@@ -73,7 +71,6 @@ def generate_interval(C, Z):
         for lu in LU:
             l = lu[0]
             u = lu[1]
-            print(l, u)
             if l <= L and L <= u and u <= U:
                 U = u
             elif L <= l and l <= U and U <= u:
@@ -105,3 +102,43 @@ def generate_LU_by_vec(vecA, b, C, Z):
     LU = [L, U]
     LU_list = [LU]
     return LU_list
+
+def generate_selective_p(vecX, H, interval):
+    HTX = np.dot(H.T, vecX)
+    sigma = np.dot(H.T, H)
+    L = interval[0]
+    U = interval[1]
+    print("[", HTX, ", ", 0, ", ", L, ", ", U, ", ", sigma, "],")
+    F = cdf(HTX, 0, L, U, sigma)
+    selective_p = 2 * min(F, 1 - F)
+    return selective_p
+
+def cdf(x, mu, a, b, sigma):
+    if a == None:
+        a = -float('inf')
+    if b == None:
+        b = float('inf')
+    cdf_xm = mp.ncdf((x - mu) / np.sqrt(sigma))
+    cdf_am = mp.ncdf((a - mu) / np.sqrt(sigma))
+    cdf_bm = mp.ncdf((b - mu) / np.sqrt(sigma))
+    F = (cdf_xm - cdf_am) / (cdf_bm - cdf_am)
+    return F
+
+def debug_tau(H, vecX):
+    sum0 = 0
+    n0 = 0
+    sum1 = 0
+    n1 = 0
+    for i in range(len(H)):
+        if (H[i] > 0):
+            sum0 += vecX[i]
+            n0 += 1
+        else:
+            sum1 += vecX[i]
+            n1 += 1
+    sum0 /= n0
+    sum1 /= n1
+
+    print("領域: ", sum0)
+    print("領域: ", sum1)
+    print("平均の差: ", sum0 - sum1)
