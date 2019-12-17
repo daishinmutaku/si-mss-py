@@ -39,5 +39,11 @@ def removeZeroCols(H):
     H = np.delete(H, del_list, 1)
     return H
 
-def generate_tau(H, vecX):
-    return np.dot(H, vecX)
+def generate_c_mat(H):
+    col = H.shape[0]
+    C = np.zeros(col)
+    for i in range(col):
+        eta = H[i]
+        c = eta / (np.dot(eta.T, eta))
+        C[i] = c
+    return C

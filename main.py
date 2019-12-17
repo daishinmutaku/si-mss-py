@@ -7,6 +7,8 @@ def main():
     result = mss.filtering(vecX)
 
     H = si.generate_eta_mat(result)
+    C = si.generate_c_mat(H)
+
 
 if __name__ == "__main__":
     main()
