@@ -1,0 +1,11 @@
+# 人口データ
+MU = 128
+SIGMA = 1
+EDGE = 8
+ROW = EDGE
+COL = EDGE
+
+# アルゴリズム
+MAX_ITERATION_COUNT = 100
+EPSILON = 1
+h = 1

@@ -1,11 +1,10 @@
-import artificial_data
+import artificial_data as data
+import meanshift_segmentation as mss
 
 def main():
-    mss()
+    vecX = data.generateImageVector();
+    mss.mss()
 
-def mss():
-    vecX = artificial_data.generateImageVector();
-    print(vecX)
 
 if __name__ == "__main__":
     main()

@@ -1,12 +1,7 @@
 import numpy as np
-
-# 人口データ
-MU = 128
-SIGMA = 1
-EDGE = 8
-ROW = EDGE
-COL = EDGE
+import param
 
 def generateImageVector():
-    x = np.random.normal(MU, SIGMA, ROW * COL)
+    x = np.random.normal(param.MU, param.SIGMA, param.ROW * param.COL)
+    x.sort()
     return x
