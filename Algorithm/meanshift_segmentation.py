@@ -1,7 +1,7 @@
 import param
-import pixel_class
+from Model import pixel_class
 from operator import attrgetter
-import selection_event as se
+from SI import selection_event as se
 import math
 
 # SI対象のアルゴリズム

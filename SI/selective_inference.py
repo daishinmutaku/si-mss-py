@@ -1,6 +1,15 @@
 import numpy as np
 import param
 
+def inference(vecX, result):
+    H = generate_eta_mat(result)
+    print(H)
+    C = generate_c_mat(H)
+    print(C)
+    Z = generate_z_mat(C, H, vecX)
+    print(Z)
+    generate_interval(H, C, Z)
+
 def generate_eta_mat(result):
     H = np.zeros((len(result), param.COLOR_RANGE))
     row, col = H.shape
@@ -9,7 +18,7 @@ def generate_eta_mat(result):
         value = result[i]
         H[i, value] += 1
 
-    H = removeZeroCols(H)
+    H = remove_zero_cols(H)
     row, col = H.shape
 
     for i in range(col):
@@ -30,7 +39,7 @@ def generate_eta_mat(result):
     H = H[:, 0]
     return H
 
-def removeZeroCols(H):
+def remove_zero_cols(H):
     row, col = H.shape
     del_list = []
     for c in range(col):
@@ -48,3 +57,12 @@ def generate_z_mat(C, H, vecX):
     I = np.eye(col)
     Z = np.dot(I - np.dot(C, H.T), vecX)
     return Z
+
+def generate_interval(H, C, Z):
+    col = H.shape[0]
+    for i in range(col):
+        c = C[i]
+        z = Z[i]
+        # mergeLU(param.RANGE, param.EPSILON, c, z)
+
+# def mergeLU(h_r, epsilon, c, z):
