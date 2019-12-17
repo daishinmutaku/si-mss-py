@@ -7,7 +7,11 @@ def main():
     result = mss.filtering(vecX)
 
     H = si.generate_eta_mat(result)
+    print(H)
     C = si.generate_c_mat(H)
+    print(C)
+    Z = si.generate_z_mat(C, H, vecX)
+    print(Z)
 
 
 if __name__ == "__main__":

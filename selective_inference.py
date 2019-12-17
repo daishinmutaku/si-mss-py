@@ -40,10 +40,11 @@ def removeZeroCols(H):
     return H
 
 def generate_c_mat(H):
-    col = H.shape[0]
-    C = np.zeros(col)
-    for i in range(col):
-        eta = H[i]
-        c = eta / (np.dot(eta.T, eta))
-        C[i] = c
+    C = H / np.dot(H.T, H)
     return C
+
+def generate_z_mat(C, H, vecX):
+    col = H.shape[0]
+    I = np.eye(col)
+    Z = np.dot(I - np.dot(C, H.T), vecX)
+    return Z
