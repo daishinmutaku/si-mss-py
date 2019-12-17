@@ -18,6 +18,24 @@ def filtering(vecX):
 
     sorted_pixels = sorted(pixels, key=attrgetter('value'))
     se.deriveA3(sorted_pixels)
-    print(se.vecA3)
+
+    vecx_list = generate_vecx_list(sorted_pixels)
+    print(vecx_list)
+
+
+def generate_vecx_list(pixels):
+    vecx_list = []
+    i = 0
+    while i < len(pixels):
+        vecx = []
+        current_pixel = pixels[i]
+        vecx.append(current_pixel)
+        if i + 1 < len(pixels):
+            while pixels[i + 1].value == current_pixel.value:
+                vecx.append(pixels[i + 1])
+                i += 1
+        vecx_list.append(vecx)
+        i += 1
+    return vecx_list
 
 
