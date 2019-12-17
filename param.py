@@ -8,4 +8,4 @@ COL = EDGE
 # アルゴリズム
 MAX_ITERATION_COUNT = 100
 EPSILON = 1
-h = 1
+RANGE = 1

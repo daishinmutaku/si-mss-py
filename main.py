@@ -3,7 +3,7 @@ import meanshift_segmentation as mss
 
 def main():
     vecX = data.generateImageVector();
-    mss.mss()
+    mss.filtering(vecX)
 
 
 if __name__ == "__main__":
