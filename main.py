@@ -1,12 +1,12 @@
 import artificial_data as data
 import meanshift_segmentation as mss
+import selective_inference as si
 
 def main():
     vecX = data.generateImageVector();
-    print(vecX)
     result = mss.filtering(vecX)
-    print(result)
 
+    H = si.generate_eta_mat(result)
 
 if __name__ == "__main__":
     main()

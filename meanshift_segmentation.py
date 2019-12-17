@@ -16,7 +16,6 @@ def filtering(vecX):
     se.deriveA3(sorted_pixels)
 
     vecx_list = generate_vecx_list(sorted_pixels)
-    print(vecx_list)
 
     for i in range(len(vecx_list)):
         vecx = vecx_list[i]

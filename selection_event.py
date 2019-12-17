@@ -1,5 +1,3 @@
-import pixel_class
-
 vecA3 = []
 
 def deriveA3(pixels):
