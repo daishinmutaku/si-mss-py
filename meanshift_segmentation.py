@@ -1,6 +1,7 @@
 import param
 import pixel_class
 from operator import attrgetter
+import selection_event as se
 
 def filtering(vecX):
     sr = param.RANGE
@@ -16,6 +17,7 @@ def filtering(vecX):
         pixels.append(pixel)
 
     sorted_pixels = sorted(pixels, key=attrgetter('value'))
-    print(sorted_pixels)
+    se.deriveA3(sorted_pixels)
+    print(se.vecA3)
 
 
