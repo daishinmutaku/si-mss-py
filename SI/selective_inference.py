@@ -69,11 +69,8 @@ def generate_interval(C, Z):
     """
     quadraticInterval = c_func.QuadraticInterval()
     # TODO: 区間削りすぎ
-    for A in se.vecA1:
-        generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
-    # TODO: 区間削りすぎ
-    for A in se.vecA2:
-        generate_LU(C, Z, A, -param.EPSILON, quadraticInterval)
+    # for A in se.vecA1:
+    #     generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
     # TODO: 区間削りすぎ
     # for A in se.vecA3:
     #     generate_LU(C, Z, A, 0, quadraticInterval)

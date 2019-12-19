@@ -78,13 +78,7 @@ def meanshift(size, max_count, vecx_list, vi, sr, epsilon, S_old):
 
         icount = 1 / count
         vm *= icount
-        sign = np.sign(vi - vm)
-        stop_flag = abs(vm - vi) <= epsilon
-
         vi = vm
-
-        if stop_flag:
-            se.deriveA2(size, S_old, S, sign)
-            return vi
-
         S_old = S
+
+    return vi
