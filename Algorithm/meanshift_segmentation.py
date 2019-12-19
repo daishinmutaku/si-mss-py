@@ -2,17 +2,18 @@ import param
 from Model import pixel_class
 from operator import attrgetter
 from SI import selection_event as se
-import math
+import numpy as np
+import artificial_data as data
 
 # SI対象のアルゴリズム
-def filtering(vecX):
-    size = len(vecX)
+def segmentation():
+    size = len(data.vecX)
     result = [0] * size
     sr = param.RANGE
     max_count = max([param.MAX_ITERATION_COUNT, 1])
     epsilon = max([param.EPSILON, 0])
 
-    sorted_pixels = generate_pixels(size, vecX)
+    sorted_pixels = generate_pixels(size)
     se.deriveA3(sorted_pixels)
 
     vecx_list = generate_vecx_list(sorted_pixels)
@@ -22,18 +23,18 @@ def filtering(vecX):
         vi = vecx[0].value
         S_old = vecx
 
-        vi = meanshift(max_count, vecx_list, vi, sr, epsilon, S_old)
+        vi = meanshift(size, max_count, vecx_list, vi, sr, epsilon, S_old)
 
         for j in range(len(vecx)):
             pixel = vecx[j]
-            result[pixel.x] = vi
+            result[pixel.x] = round(vi) # TODO: 四捨五入
 
     return result
 
-def generate_pixels(size, vecX):
+def generate_pixels(size):
     pixels = []
     for i in range(size):
-        pixel = pixel_class.Pixel(i, vecX[i])
+        pixel = pixel_class.Pixel(i, data.vecX[i])
         pixels.append(pixel)
     sorted_pixels = sorted(pixels, key=attrgetter('value'))
     return sorted_pixels
@@ -53,37 +54,37 @@ def generate_vecx_list(pixels):
             vecx.append(pixel)
     if len(vecx) > 0:
         vecx_list.append(vecx)
+
     return vecx_list
 
 
-def meanshift(max_count, vecx_list, vi, sr, epsilon, S_old):
+def meanshift(size, max_count, vecx_list, vi, sr, epsilon, S_old):
     for j in range(max_count):
         count = 0
         vm = 0
         S = []
-        for k in range(len(vecx_list)):
-            vecx = vecx_list[k]
+        for vecx in vecx_list:
             v = vecx[0].value
             dif = abs(v - vi)
+            sign = np.sign(v - vi)
             if dif <= sr:
-                for l in range(len(vecx)):
-                    S.append(vecx[l])
+                for x in vecx:
+                    S.append(x)
                     vm += v
                     count += 1
-                # TODO: A1
-
+                se.deriveA1(size, x.x, S_old, sign)
         if count == 0:
             break;
 
         icount = 1 / count
-        vm = math.floor(vm * icount) # TODO: 切り捨て
-
+        vm *= icount
+        sign = np.sign(vi - vm)
         stop_flag = abs(vm - vi) <= epsilon
 
         vi = vm
 
         if stop_flag:
-            # TODO: A2
+            se.deriveA2(size, S_old, S, sign)
             return vi
 
         S_old = S
