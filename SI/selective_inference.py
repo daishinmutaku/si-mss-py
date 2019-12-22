@@ -54,13 +54,13 @@ def remove_zero_cols(H):
     return H
 
 def generate_c_mat(H):
-    C = H / np.dot(H.T, H)
+    C = np.reciprocal(np.dot(H.T, H)) * H.T
     return C
 
 def generate_z_mat(C, H):
-    col = H.shape[0]
-    I = np.eye(col)
-    Z = np.dot(I - np.dot(C, H.T), data.vecX)
+    var = np.outer(C.T, H.T)
+    var = np.eye(H.shape[0]) - var
+    Z = np.dot(var, data.vecX)
     return Z
 
 def generate_interval(C, Z):
@@ -69,37 +69,14 @@ def generate_interval(C, Z):
     """
     quadraticInterval = c_func.QuadraticInterval()
     # TODO: 区間削りすぎ
-    # for A in se.vecA1:
-    #     generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
-    # TODO: 区間削りすぎ
+    for A in se.vecA1:
+        generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
+    for A in se.vecA2:
+        generate_LU(C, Z, A, 0, quadraticInterval)
     # for A in se.vecA3:
     #     generate_LU(C, Z, A, 0, quadraticInterval)
 
     return quadraticInterval.get()
-
-    # LU1 = generate_LU_by_vec(se.vecA1, param.RANGE, C, Z)
-    # LU2 = generate_LU_by_vec(se.vecA2, param.EPSILON, C, Z)
-    # LU3 = generate_LU_by_vec(se.vecA3, 0, C, Z)
-    # LU_list = [LU1, LU2, LU3]
-    #
-    # L = -mp.inf
-    # U = mp.inf
-    #
-    # for LU in LU_list:
-    #     print(LU)
-    #     for lu in LU:
-    #         l = lu[0]
-    #         u = lu[1]
-    #         if l <= L and L <= u and u <= U:
-    #             U = u
-    #         elif L <= l and l <= U and U <= u:
-    #             L = l
-    #         elif L <= l and l <= u and u <= U:
-    #             L = l
-    #             U = u
-    #
-    # interval = [L, U]
-    # return interval
 
 def generate_LU(C, Z, A, b, quadraticInterval):
     if A.ndim == 1:

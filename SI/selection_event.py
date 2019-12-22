@@ -6,8 +6,9 @@ vecA1 = []
 vecA2 = []
 vecA3 = []
 
-def deriveA1(n, i, S_old, sign):
+def deriveA1(i, S_old):
     global vecA1
+    n = param.SIZE
     e_i = np.zeros(n)
     e_i[i] = 1
     S_old_size = len(S_old)
@@ -15,14 +16,29 @@ def deriveA1(n, i, S_old, sign):
     for s in S_old:
         s_x = s.x
         one_S_old[s_x] = 1 / S_old_size
+    Ap = e_i - one_S_old
+    Am = -1 * (e_i - one_S_old)
+    # debugA1(i, S_old, Ap)
+    # debugA1(i, S_old, Am) # 符号は逆転する
+    vecA1.append(Ap)
+    vecA1.append(Am)
 
-    A = sign * (e_i - one_S_old)
+def deriveA2(i, S_old, sign):
+    global vecA1
+    n = param.SIZE
+    e_i = np.zeros(n)
+    e_i[i] = 1
+    S_old_size = len(S_old)
+    one_S_old = np.zeros(n)
+    for s in S_old:
+        s_x = s.x
+        one_S_old[s_x] = 1 / S_old_size
+    A = -1 * sign * (e_i - one_S_old)
     # debugA1(i, S_old, A)
-    vecA1.append(A)
-
+    vecA2.append(A)
 
 def debugA1(i, S_old, A):
-    dif = abs(data.vecX[i] - sum_value(S_old))
+    dif = data.vecX[i] - sum_value(S_old)
     AX = np.dot(A, data.vecX)
     if dif != AX:
         print(dif, " != ", AX)

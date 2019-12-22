@@ -7,8 +7,7 @@ COL = EDGE
 SIZE = COL * ROW
 
 # アルゴリズム
-MAX_ITERATION_COUNT = 1
-EPSILON = 1
+N = 1
 RANGE = 2
 
 # その他
