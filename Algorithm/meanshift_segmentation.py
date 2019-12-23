@@ -9,8 +9,8 @@ import artificial_data as data
 def segmentation():
     size = param.SIZE
     result = [0] * size
-    sr = param.RANGE
-    max_count = max([param.N, 1])
+    h = param.RANGE
+    N = max([param.N, 1])
 
     sorted_pixels = generate_pixels(size)
     se.deriveA3(sorted_pixels)
@@ -21,10 +21,12 @@ def segmentation():
         vi = vecx[0].value
         S_old = vecx
 
-        vi = meanshift(max_count, vecx_list, vi, sr, S_old)
+        vi = meanshift(N, vecx_list, vi, h, S_old)
 
         for pixel in vecx:
             result[pixel.x] = round(vi)# TODO: 四捨五入
+    print(data.vecX)
+    print(result)
 
     return result
 
@@ -56,8 +58,8 @@ def generate_vecx_list(pixels):
     return vecx_list
 
 
-def meanshift(max_count, vecx_list, vi, sr, S_old):
-    for j in range(max_count):
+def meanshift(N, vecx_list, vi, h, S_old):
+    for j in range(N):
         count = 0
         vm = 0
         S = []
@@ -65,7 +67,7 @@ def meanshift(max_count, vecx_list, vi, sr, S_old):
             v = vecx[0].value
             dif = abs(v - vi)
             for x in vecx:
-                if dif <= sr:
+                if dif <= h:
                     S.append(x)
                     vm += v
                     count += 1
