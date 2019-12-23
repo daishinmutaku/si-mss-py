@@ -10,7 +10,7 @@ SIZE = COL * ROW
 
 # アルゴリズム
 N = 100
-RANGE = 13
+RANGE = 12
 # N = 1
 # RANGE = 2
 

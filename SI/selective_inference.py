@@ -69,12 +69,16 @@ def generate_interval(C, Z):
     """
     quadraticInterval = c_func.QuadraticInterval()
     # TODO: 区間削りすぎ
+    print("範囲内")
     for A in se.vecA1:
         generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
+    print("範囲外")
     for A in se.vecA2:
         generate_LU(C, Z, A, 0, quadraticInterval)
-    # for A in se.vecA3:
-    #     generate_LU(C, Z, A, 0, quadraticInterval)
+        generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
+    print("ソート")
+    for A in se.vecA3:
+        generate_LU(C, Z, A, 0, quadraticInterval)
 
     return quadraticInterval.get()
 

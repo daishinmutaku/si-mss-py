@@ -24,9 +24,7 @@ def segmentation():
         vi = meanshift(N, vecx_list, vi, h, S_old)
 
         for pixel in vecx:
-            result[pixel.x] = round(vi)# TODO: 四捨五入
-    print(data.vecX)
-    print(result)
+            result[pixel.x] = round(vi)  # TODO: 四捨五入
 
     return result
 
