@@ -24,8 +24,8 @@ def segmentation():
         vi = meanshift(N, vecx_list, vi, h, S_old)
 
         for pixel in vecx:
-            result[pixel.x] = round(vi)  # TODO: 四捨五入
-
+            result[pixel.x] = vi
+    print(result)
     return result
 
 def generate_pixels(size):

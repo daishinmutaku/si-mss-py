@@ -16,33 +16,32 @@ def inference(result):
     debug_tau(H)
 
 def generate_eta_mat(result):
-    H = np.zeros((len(result), param.COLOR_RANGE))
-    row, col = H.shape
+    H = []
+    area_value_list = {}
+    count_list = []
+    n = len(result)
+    for index, value in enumerate(result):
+        if value not in area_value_list:
+            area_value_list[value] = len(area_value_list)
+            eta = np.zeros(n)
+            H.append(eta)
+            count_list.append(0)
+        area_num = area_value_list[value]
+        eta = H[area_num]
+        eta[index] += 1
+        count_list[area_num] += 1
 
-    for i in range(row):
-        value = result[i]
-        H[i, value] += 1
+    for i, eta in enumerate(H):
+        eta /= count_list[i]
 
-    H = remove_zero_cols(H)
-    row, col = H.shape
-
-    for i in range(col):
-        num = 0
-        for j in range(row):
-            if H[j, i] == 1:
-                num += 1
-        H[:, i] /= num
-
-    print("領域数: ", col)
-    if(col != 2):
+    print("領域数: ", len(H))
+    if (len(H) != 2):
         exit()
 
-    for i in range(row):
-        if H[i, 0] == 0:
-            H[i, 0] = -1 * H[i, 1]
+    for i, eta1 in enumerate(H[1]):
+        H[0][i] -= eta1
 
-    H = H[:, 0]
-    return H
+    return H[0]
 
 def remove_zero_cols(H):
     row, col = H.shape
@@ -69,14 +68,11 @@ def generate_interval(C, Z):
     """
     quadraticInterval = c_func.QuadraticInterval()
     # TODO: 区間削りすぎ
-    print("範囲内")
     for A in se.vecA1:
         generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
-    print("範囲外")
     for A in se.vecA2:
         generate_LU(C, Z, A, 0, quadraticInterval)
         generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
-    print("ソート")
     for A in se.vecA3:
         generate_LU(C, Z, A, 0, quadraticInterval)
 
@@ -84,12 +80,10 @@ def generate_interval(C, Z):
 
 def generate_LU(C, Z, A, b, quadraticInterval):
     if A.ndim == 1:
-        # print("線形")
         alpha = 0
         beta = np.dot(A.T, C)
         gamma = np.dot(A.T, Z) + b
     elif A.ndim == 2:
-        # print("二次")
         alpha = np.dot(np.dot(C.T, A), C)
         zac = np.dot(np.dot(Z.T, A), C)
         caz = np.dot(np.dot(C.T, A), Z)
@@ -128,7 +122,6 @@ def generate_selective_p(H, interval):
     L = interval[0][0]
     U = interval[0][1]
     print("[", HTX, ", ", 0, ", ", L, ", ", U, ", ", sigma, "],")
-    # F = cdf(HTX, 0, L, U, sigma)
     F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
