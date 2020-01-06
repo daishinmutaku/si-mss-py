@@ -4,6 +4,7 @@ from operator import attrgetter
 from SI import selection_event as se
 import numpy as np
 import artificial_data as data
+import matplotlib.pyplot as plt
 
 # SI対象のアルゴリズム
 def segmentation():
@@ -16,6 +17,9 @@ def segmentation():
     se.deriveA3(sorted_pixels)
 
     vecx_list = generate_vecx_list(sorted_pixels)
+    plt.hist(data.vecX, bins=len(vecx_list), rwidth=0.8, range=(min(data.vecX), max(data.vecX)))
+    plt.show()
+
 
     for vecx in vecx_list:
         vi = vecx[0].value
@@ -25,6 +29,8 @@ def segmentation():
 
         for pixel in vecx:
             result[pixel.x] = vi
+    plt.hist(result, bins=len(vecx_list), rwidth=0.8, range=(min(data.vecX), max(data.vecX)))
+    plt.show()
     print(result)
     return result
 

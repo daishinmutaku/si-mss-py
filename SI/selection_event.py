@@ -7,7 +7,6 @@ vecA2 = []
 vecA3 = []
 
 def deriveA1(i, S_old):
-    global vecA1
     n = param.SIZE
     e_i = np.zeros(n)
     e_i[i] = 1
@@ -24,7 +23,6 @@ def deriveA1(i, S_old):
     vecA1.append(Am)
 
 def deriveA2(i, S_old, sign):
-    global vecA1
     n = param.SIZE
     e_i = np.zeros(n)
     e_i[i] = 1
@@ -68,7 +66,6 @@ def debugA1(i, S_old, A):
 #         print(dif, " != ", AX)
 
 def deriveA3(pixels):
-    global vecA3
     n = len(pixels)
     for i in range(n):
         pixel_i = pixels[i]

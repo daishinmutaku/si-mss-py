@@ -9,8 +9,8 @@ COL = EDGE
 SIZE = COL * ROW
 
 # アルゴリズム
-N = 100
-RANGE = 12
+N = 10
+RANGE = 4
 # N = 1
 # RANGE = 2
 

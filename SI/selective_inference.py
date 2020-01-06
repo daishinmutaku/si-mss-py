@@ -5,7 +5,6 @@ from SI import common_function as c_func
 from mpmath import mp
 import artificial_data as data
 
-
 def inference(result):
     H = generate_eta_mat(result)
     C = generate_c_mat(H)
@@ -19,11 +18,10 @@ def generate_eta_mat(result):
     H = []
     area_value_list = {}
     count_list = []
-    n = len(result)
     for index, value in enumerate(result):
         if value not in area_value_list:
             area_value_list[value] = len(area_value_list)
-            eta = np.zeros(n)
+            eta = np.zeros(len(result))
             H.append(eta)
             count_list.append(0)
         area_num = area_value_list[value]
