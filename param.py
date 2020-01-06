@@ -1,6 +1,6 @@
+# coding: utf-8
 # 人口データ
-MU1 = 128
-MU2 = MU1
+MU = 128
 SIGMA = 10
 # SIGMA = 1
 EDGE = 8
@@ -10,7 +10,7 @@ SIZE = COL * ROW
 
 # アルゴリズム
 N = 10
-RANGE = 4
+RANGE = 16
 # N = 1
 # RANGE = 2
 

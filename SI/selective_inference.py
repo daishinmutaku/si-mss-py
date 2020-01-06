@@ -1,17 +1,21 @@
+# coding: utf-8
 import numpy as np
 import param
 from SI import selection_event as se
 from SI import common_function as c_func
 from mpmath import mp
 import artificial_data as data
+from IO import csv_writer
 
 def inference(result):
     H = generate_eta_mat(result)
+    debug_tau(H)
     C = generate_c_mat(H)
     Z = generate_z_mat(C, H)
     interval = generate_interval(C, Z)
     selective_p = generate_selective_p(H, interval)
     print(selective_p)
+    csv_writer.csv_write([selective_p])
     debug_tau(H)
 
 def generate_eta_mat(result):
@@ -65,14 +69,10 @@ def generate_interval(C, Z):
     toda's program
     """
     quadraticInterval = c_func.QuadraticInterval()
-    # TODO: 区間削りすぎ
     for A in se.vecA1:
         generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
     for A in se.vecA2:
-        generate_LU(C, Z, A, 0, quadraticInterval)
-        generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
-    for A in se.vecA3:
-        generate_LU(C, Z, A, 0, quadraticInterval)
+        generate_LU(C, Z, A, param.RANGE, quadraticInterval)
 
     return quadraticInterval.get()
 
