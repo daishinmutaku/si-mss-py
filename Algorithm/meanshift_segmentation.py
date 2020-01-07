@@ -3,9 +3,7 @@
 import param
 from SI import selection_event as se
 from Model import pixel_class
-import numpy as np
 import artificial_data as data
-import matplotlib.pyplot as plt
 
 # SI対象のアルゴリズム
 def segmentation():
@@ -13,17 +11,10 @@ def segmentation():
     result = [0] * size
     h = param.RANGE
     N = max([param.N, 1])
-
-    # plt.hist(data.vecX, rwidth=0.8, range=(min(data.vecX), max(data.vecX)))
-    # plt.show()
-
     X = convert_pixels(size)
-
     for x_i in X:
         result[x_i.x] = meanshift(X, h, N, x_i)
 
-    # plt.hist(result, rwidth=0.8, range=(min(data.vecX), max(data.vecX)))
-    # plt.show()
     return result
 
 def convert_pixels(size):
@@ -48,13 +39,10 @@ def meanshift(X, h, N, x_i):
                 v_m += v_j
                 se.deriveA1(x_j.x, S_old)
             else:
-                sign = np.sign(v_i - v_j)
-                se.deriveA2(x_j.x, S_old, sign)
+                se.deriveA2(x_j.x, S_old)
         if len(S) == 0:
             break
-
-        icount = 1 / len(S)
-        v_m *= icount
+        v_m /= len(S)
         v_i = v_m
         S_old = S
 

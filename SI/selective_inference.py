@@ -16,43 +16,34 @@ def inference(result):
     selective_p = generate_selective_p(H, interval)
     print(selective_p)
     csv_writer.csv_write([selective_p])
-    debug_tau(H)
 
 def generate_eta_mat(result):
-    H = []
+    H_all = []
     area_value_list = {}
     count_list = []
     for index, value in enumerate(result):
         if value not in area_value_list:
+            print(value)
             area_value_list[value] = len(area_value_list)
             eta = np.zeros(len(result))
-            H.append(eta)
+            H_all.append(eta)
             count_list.append(0)
         area_num = area_value_list[value]
-        eta = H[area_num]
+        eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
 
-    for i, eta in enumerate(H):
+    for i, eta in enumerate(H_all):
         eta /= count_list[i]
 
-    print("領域数: ", len(H))
-    if (len(H) != 2):
-        exit()
+    print("領域数: ", len(H_all))
 
-    for i, eta1 in enumerate(H[1]):
-        H[0][i] -= eta1
+    H_2 = H_all[0]
+    area_1 = H_all[1]
+    for i, eta1 in enumerate(area_1):
+        H_2[i] -= eta1
 
-    return H[0]
-
-def remove_zero_cols(H):
-    row, col = H.shape
-    del_list = []
-    for c in range(col):
-        if np.all(H[:, c] == 0):
-            del_list.append(c)
-    H = np.delete(H, del_list, 1)
-    return H
+    return H_2
 
 def generate_c_mat(H):
     C = np.reciprocal(np.dot(H.T, H)) * H.T
@@ -70,24 +61,24 @@ def generate_interval(C, Z):
     """
     quadraticInterval = c_func.QuadraticInterval()
     for A in se.vecA1:
-        generate_LU(C, Z, A, -param.RANGE, quadraticInterval)
+        generate_LU(C, Z, A, -(param.RANGE**2), quadraticInterval)
     for A in se.vecA2:
-        generate_LU(C, Z, A, param.RANGE, quadraticInterval)
+        generate_LU(C, Z, A, param.RANGE**2, quadraticInterval)
 
     return quadraticInterval.get()
 
-def generate_LU(C, Z, A, b, quadraticInterval):
+def generate_LU(C, Z, A, c, quadraticInterval):
     if A.ndim == 1:
         alpha = 0
         beta = np.dot(A.T, C)
-        gamma = np.dot(A.T, Z) + b
+        gamma = np.dot(A.T, Z) + c
     elif A.ndim == 2:
         alpha = np.dot(np.dot(C.T, A), C)
         zac = np.dot(np.dot(Z.T, A), C)
         caz = np.dot(np.dot(C.T, A), Z)
-        zaz = np.dot(np.dot(Z.T, A), Z)
         beta = zac + caz
-        gamma = zaz - b
+        zaz = np.dot(np.dot(Z.T, A), Z)
+        gamma = zaz + c
     else:
         exit()
     quadraticInterval.cut(alpha, beta, gamma)
