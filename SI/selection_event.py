@@ -1,6 +1,6 @@
 import numpy as np
-import artificial_data as data
 import param
+import artificial_data as data
 
 vecA1 = []
 vecA2 = []
@@ -33,35 +33,8 @@ def deriveA2(i, S):
     A *= -1
     vecA2.append(A)
 
-# def deriveA1(i, S_old):
-#     n = param.SIZE
-#     e_i = np.zeros(n)
-#     e_i[i] = 1
-#     S_old_size = len(S_old)
-#     one_S_old = np.zeros(n)
-#     for s in S_old:
-#         s_x = s.x
-#         one_S_old[s_x] = 1 / S_old_size
-#     Ap = e_i - one_S_old
-#     Am = -1 * (e_i - one_S_old)
-#     vecA1.append(Ap)
-#     vecA1.append(Am)
-
-# def deriveA2(i, S_old, sign):
-#     n = param.SIZE
-#     e_i = np.zeros(n)
-#     e_i[i] = 1
-#     S_old_size = len(S_old)
-#     one_S_old = np.zeros(n)
-#     for s in S_old:
-#         s_x = s.x
-#         one_S_old[s_x] = 1 / S_old_size
-#     # A = -1 * sign * (e_i - one_S_old)
-#     A = sign * (e_i - one_S_old)
-#     vecA2.append(A)
-
 def debugA(i, S, A):
-    X = data.vecX
+    X = data.X_origin
     dif = (X[i] - mean_value(S))**2
     XAX = np.dot(X, np.dot(A, X))
     if abs(dif - XAX) > 1e-10:

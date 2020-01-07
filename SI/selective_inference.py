@@ -3,24 +3,24 @@ import numpy as np
 import param
 from SI import selection_event as se
 from SI import common_function as c_func
-from mpmath import mp
 import artificial_data as data
-from IO import csv_writer
+from statistics import mean
+
 
 def inference(result):
     H = generate_eta_mat(result)
-    debug_tau(H)
     C = generate_c_mat(H)
     Z = generate_z_mat(C, H)
     interval = generate_interval(C, Z)
     selective_p = generate_selective_p(H, interval)
-    print(selective_p)
-    csv_writer.csv_write([selective_p])
+    return selective_p
+
 
 def generate_eta_mat(result):
     H_all = []
     area_value_list = {}
     count_list = []
+    print("---")
     for index, value in enumerate(result):
         if value not in area_value_list:
             print(value)
@@ -32,12 +32,10 @@ def generate_eta_mat(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-
+    print("---")
+    print("領域数: ", len(H_all))
     for i, eta in enumerate(H_all):
         eta /= count_list[i]
-
-    print("領域数: ", len(H_all))
-
     H_2 = H_all[0]
     area_1 = H_all[1]
     for i, eta1 in enumerate(area_1):
@@ -45,29 +43,33 @@ def generate_eta_mat(result):
 
     return H_2
 
+
 def generate_c_mat(H):
     C = np.reciprocal(np.dot(H.T, H)) * H.T
     return C
 
+
 def generate_z_mat(C, H):
     var = np.outer(C.T, H.T)
     var = np.eye(H.shape[0]) - var
-    Z = np.dot(var, data.vecX)
+    Z = np.dot(var, data.X_origin)
     return Z
+
 
 def generate_interval(C, Z):
     """
     toda's program
     """
-    quadraticInterval = c_func.QuadraticInterval()
+    quadratic_interval = c_func.QuadraticInterval()
     for A in se.vecA1:
-        generate_LU(C, Z, A, -(param.RANGE**2), quadraticInterval)
+        generate_LU(C, Z, A, -(param.RANGE ** 2), quadratic_interval)
     for A in se.vecA2:
-        generate_LU(C, Z, A, param.RANGE**2, quadraticInterval)
+        generate_LU(C, Z, A, param.RANGE ** 2, quadratic_interval)
 
-    return quadraticInterval.get()
+    return quadratic_interval.get()
 
-def generate_LU(C, Z, A, c, quadraticInterval):
+
+def generate_LU(C, Z, A, c, quadratic_interval):
     if A.ndim == 1:
         alpha = 0
         beta = np.dot(A.T, C)
@@ -81,66 +83,30 @@ def generate_LU(C, Z, A, c, quadraticInterval):
         gamma = zaz + c
     else:
         exit()
-    quadraticInterval.cut(alpha, beta, gamma)
+    quadratic_interval.cut(alpha, beta, gamma)
 
-def generate_LU_by_vec(vecA, b, C, Z):
-    L = -mp.inf
-    U = mp.inf
-
-    for A in vecA:
-        beta = np.dot(A, C)
-        gamma = np.dot(A, Z) + b
-
-        if beta < 0:
-            l = -1 * gamma / beta
-            if l > L:
-                L = l
-        elif beta > 0:
-            u = -1 * gamma / beta
-            if u < U:
-                U = u
-
-    LU = [L, U]
-    LU_list = [LU]
-    return LU_list
 
 def generate_selective_p(H, interval):
     print(interval)
-    HTX = np.dot(H.T, data.vecX)
+    HTX = np.dot(H.T, data.X_origin)
     sigma = np.dot(H.T, H)
-    L = interval[0][0]
-    U = interval[0][1]
-    print("[", HTX, ", ", 0, ", ", L, ", ", U, ", ", sigma, "],")
+    print("検定統計量:", HTX)
+    print("分散:", sigma)
     F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
 
-def cdf(x, mu, a, b, sigma):
-    if a == None:
-        a = -float('inf')
-    if b == None:
-        b = float('inf')
-    cdf_xm = mp.ncdf((x - mu) / np.sqrt(sigma))
-    cdf_am = mp.ncdf((a - mu) / np.sqrt(sigma))
-    cdf_bm = mp.ncdf((b - mu) / np.sqrt(sigma))
-    F = (cdf_xm - cdf_am) / (cdf_bm - cdf_am)
-    return F
 
 def debug_tau(H):
-    sum0 = 0
-    n0 = 0
-    sum1 = 0
-    n1 = 0
-    for i in range(len(H)):
-        if (H[i] > 0):
-            sum0 += data.vecX[i]
-            n0 += 1
-        else:
-            sum1 += data.vecX[i]
-            n1 += 1
-    sum0 /= n0
-    sum1 /= n1
-
-    print("領域: ", sum0)
-    print("領域: ", sum1)
-    print("平均の差: ", sum0 - sum1)
+    area0 = []
+    area1 = []
+    for i, v in enumerate(H):
+        if v > 0:
+            area0.append(data.X_origin[i])
+        elif v < 0:
+            area1.append(data.X_origin[i])
+    mean0 = mean(area0)
+    mean1 = mean(area1)
+    print("領域0の平均: ", mean0)
+    print("領域1の平均: ", mean1)
+    print("平均の差: ", mean0 - mean1)

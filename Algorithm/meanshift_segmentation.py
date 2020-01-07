@@ -20,7 +20,7 @@ def segmentation():
 def convert_pixels(size):
     pixels = []
     for i in range(size):
-        pixel = pixel_class.Pixel(i, data.vecX[i])
+        pixel = pixel_class.Pixel(i, data.X_origin[i])
         pixels.append(pixel)
 
     return pixels
