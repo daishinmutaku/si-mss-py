@@ -5,6 +5,7 @@ from SI import selection_event as se
 from Model import pixel_class
 import artificial_data as data
 
+
 # SI対象のアルゴリズム
 def segmentation():
     size = param.SIZE
@@ -17,6 +18,7 @@ def segmentation():
 
     return result
 
+
 def convert_pixels(size):
     pixels = []
     for i in range(size):
@@ -24,6 +26,7 @@ def convert_pixels(size):
         pixels.append(pixel)
 
     return pixels
+
 
 def meanshift(X, h, N, x_i):
     S_old = [x_i]

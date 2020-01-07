@@ -9,6 +9,7 @@ from statistics import mean
 
 def inference(result):
     H = generate_eta_mat(result)
+    debug_tau(H)
     C = generate_c_mat(H)
     Z = generate_z_mat(C, H)
     interval = generate_interval(C, Z)
