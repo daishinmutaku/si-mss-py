@@ -11,10 +11,11 @@ def inference(result):
     H = generate_eta_mat(result)
     HTX = np.dot(H, data.X_origin)
     debug_tau(H)
-    C = generate_c_mat(H)
+    cov_H, sigma = generate_sigma(H)
+    C = generate_c_mat(cov_H, sigma)
     Z = generate_z_mat(C, HTX)
     interval = generate_interval(C, Z)
-    selective_p = generate_selective_p(H, HTX, interval)
+    selective_p = generate_selective_p(H, HTX, sigma, interval)
     return selective_p
 
 
@@ -45,12 +46,15 @@ def generate_eta_mat(result):
 
     return H_2
 
+def generate_sigma(H):
+    cov = np.identity(param.SIZE) * param.SIGMA
+    cov_H = np.dot(cov, H)
+    sigma = np.dot(H, cov_H)
+    return cov_H, sigma
 
-def generate_c_mat(H):
-    sigma = np.identity(param.SIZE) * param.SIGMA
-    sigma_H = np.dot(sigma, H)
-    HT_sigma_H = np.dot(H, sigma_H)
-    C = sigma_H / HT_sigma_H
+
+def generate_c_mat(cov_H, sigma):
+    C = cov_H / sigma
     return C
 
 
@@ -89,9 +93,8 @@ def generate_LU(C, Z, A, c, quadratic_interval):
     quadratic_interval.cut(alpha, beta, gamma)
 
 
-def generate_selective_p(H, HTX, interval):
+def generate_selective_p(H, HTX, sigma, interval):
     print(interval)
-    sigma = np.dot(H.T, H)
     print("検定統計量:", HTX)
     print("分散:", sigma)
     F = c_func.tn_cdf(HTX, interval, var=sigma)
