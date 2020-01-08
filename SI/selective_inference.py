@@ -9,11 +9,12 @@ from statistics import mean
 
 def inference(result):
     H = generate_eta_mat(result)
+    HTX = np.dot(H, data.X_origin)
     debug_tau(H)
     C = generate_c_mat(H)
-    Z = generate_z_mat(C, H)
+    Z = generate_z_mat(C, HTX)
     interval = generate_interval(C, Z)
-    selective_p = generate_selective_p(H, interval)
+    selective_p = generate_selective_p(H, HTX, interval)
     return selective_p
 
 
@@ -46,14 +47,15 @@ def generate_eta_mat(result):
 
 
 def generate_c_mat(H):
-    C = np.reciprocal(np.dot(H.T, H)) * H.T
+    sigma = np.identity(param.SIZE) * param.SIGMA
+    sigma_H = np.dot(sigma, H)
+    HT_sigma_H = np.dot(H, sigma_H)
+    C = sigma_H / HT_sigma_H
     return C
 
 
-def generate_z_mat(C, H):
-    var = np.outer(C.T, H.T)
-    var = np.eye(H.shape[0]) - var
-    Z = np.dot(var, data.X_origin)
+def generate_z_mat(C, HTX):
+    Z = data.X_origin - C * HTX
     return Z
 
 
@@ -87,9 +89,8 @@ def generate_LU(C, Z, A, c, quadratic_interval):
     quadratic_interval.cut(alpha, beta, gamma)
 
 
-def generate_selective_p(H, interval):
+def generate_selective_p(H, HTX, interval):
     print(interval)
-    HTX = np.dot(H.T, data.X_origin)
     sigma = np.dot(H.T, H)
     print("検定統計量:", HTX)
     print("分散:", sigma)
