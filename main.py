@@ -9,7 +9,6 @@ import param
 
 
 def main():
-    mp.dps = 1000
     # for i in range(param.EXPERIMENT_NUM):
     start = time.time()
     experiment()
