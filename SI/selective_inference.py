@@ -10,12 +10,12 @@ from statistics import mean
 def inference(result):
     H = generate_eta_mat(result)
     HTX = np.dot(H, data.X_origin)
-    debug_tau(H)
+    debug_tau(H, HTX)
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
     Z = generate_z_mat(C, HTX)
     interval = generate_interval(C, Z)
-    selective_p = generate_selective_p(H, HTX, sigma, interval)
+    selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
 
 
@@ -23,10 +23,8 @@ def generate_eta_mat(result):
     H_all = []
     area_value_list = {}
     count_list = []
-    print("---")
     for index, value in enumerate(result):
         if value not in area_value_list:
-            print(value)
             area_value_list[value] = len(area_value_list)
             eta = np.zeros(len(result))
             H_all.append(eta)
@@ -35,21 +33,24 @@ def generate_eta_mat(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    print("---")
     print("領域数: ", len(H_all))
-    for i, eta in enumerate(H_all):
-        eta /= count_list[i]
-    H_2 = H_all[0]
-    area_1 = H_all[1]
-    for i, eta1 in enumerate(area_1):
-        H_2[i] -= eta1
+    print("最大: ", max(area_value_list))
+    print("最小: ", min(area_value_list))
+    area_max = area_value_list[max(area_value_list)]
+    area_min = area_value_list[min(area_value_list)]
+    eta_max = H_all[area_max]
+    eta_min = H_all[area_min]
+    H = np.array(eta_max) / count_list[area_max]
+    for i, eta in enumerate(np.array(eta_min)):
+        H[i] -= eta / count_list[area_min]
 
-    return H_2
+    return H
 
 def generate_sigma(H):
     cov = np.identity(param.SIZE) * param.SIGMA
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
+    print("分散:", sigma)
     return cov_H, sigma
 
 
@@ -72,8 +73,10 @@ def generate_interval(C, Z):
         generate_LU(C, Z, A, -(param.RANGE ** 2), quadratic_interval)
     for A in se.vecA2:
         generate_LU(C, Z, A, param.RANGE ** 2, quadratic_interval)
+    interval = quadratic_interval.get()
+    print(interval)
 
-    return quadratic_interval.get()
+    return interval
 
 
 def generate_LU(C, Z, A, c, quadratic_interval):
@@ -93,16 +96,13 @@ def generate_LU(C, Z, A, c, quadratic_interval):
     quadratic_interval.cut(alpha, beta, gamma)
 
 
-def generate_selective_p(H, HTX, sigma, interval):
-    print(interval)
-    print("検定統計量:", HTX)
-    print("分散:", sigma)
+def generate_selective_p(HTX, sigma, interval):
     F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
 
 
-def debug_tau(H):
+def debug_tau(H, HTX):
     area0 = []
     area1 = []
     for i, v in enumerate(H):
@@ -115,3 +115,4 @@ def debug_tau(H):
     print("領域0の平均: ", mean0)
     print("領域1の平均: ", mean1)
     print("平均の差: ", mean0 - mean1)
+    print("検定統計量:", HTX)
