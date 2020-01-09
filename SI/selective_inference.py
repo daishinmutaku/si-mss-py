@@ -21,28 +21,30 @@ def inference(result):
 
 def generate_eta_mat(result):
     H_all = []
-    area_value_list = {}
+    area_value_list = []
     count_list = []
     for index, value in enumerate(result):
         if value not in area_value_list:
-            area_value_list[value] = len(area_value_list)
+            area_value_list.append(value)
             eta = np.zeros(len(result))
             H_all.append(eta)
             count_list.append(0)
-        area_num = area_value_list[value]
+        area_num = area_value_list.index(value)
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
     print("領域数: ", len(H_all))
-    print("最大: ", max(area_value_list))
-    print("最小: ", min(area_value_list))
-    area_max = area_value_list[max(area_value_list)]
-    area_min = area_value_list[min(area_value_list)]
-    eta_max = H_all[area_max]
-    eta_min = H_all[area_min]
-    H = np.array(eta_max) / count_list[area_max]
+    argsorted_count_list = np.array(count_list).argsort()[::-1]
+    first_area_index = argsorted_count_list[0]
+    second_area_index = argsorted_count_list[1]
+    print(count_list)
+    print("1番目: ", count_list[first_area_index])
+    print("2番目: ", count_list[second_area_index])
+    eta_max = H_all[first_area_index]
+    eta_min = H_all[second_area_index]
+    H = np.array(eta_max) / count_list[first_area_index]
     for i, eta in enumerate(np.array(eta_min)):
-        H[i] -= eta / count_list[area_min]
+        H[i] -= eta / count_list[second_area_index]
 
     return H
 
