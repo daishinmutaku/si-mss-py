@@ -8,7 +8,9 @@ from statistics import mean
 
 
 def inference(result):
-    H = generate_eta_mat(result)
+    H, err = generate_eta_mat(result)
+    if err:
+        return -1
     HTX = np.dot(H, data.X_origin)
     debug_tau(H, HTX)
     cov_H, sigma = generate_sigma(H)
@@ -34,6 +36,8 @@ def generate_eta_mat(result):
         eta[index] += 1
         count_list[area_num] += 1
     print("領域数: ", len(H_all))
+    if len(H_all) < 2:
+        return None, True
     argsorted_count_list = np.array(count_list).argsort()[::-1]
     first_area_index = argsorted_count_list[0]
     second_area_index = argsorted_count_list[1]
@@ -46,7 +50,7 @@ def generate_eta_mat(result):
     for i, eta in enumerate(np.array(eta_min)):
         H[i] -= eta / count_list[second_area_index]
 
-    return H
+    return H, False
 
 def generate_sigma(H):
     cov = np.identity(param.SIZE) * param.SIGMA
