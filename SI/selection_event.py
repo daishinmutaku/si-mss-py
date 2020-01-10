@@ -4,7 +4,11 @@ import artificial_data as data
 
 vecA1 = []
 vecA2 = []
-vecA3 = []
+
+def init_vecA():
+    global vecA1, vecA2
+    vecA1 = []
+    vecA2 = []
 
 
 def deriveA1(i, S):
@@ -16,7 +20,7 @@ def deriveA1(i, S):
     for s in S:
         s_x = s.x
         one_S[s_x] = 1
-    A = np.outer(one_S, one_S.T) / (S_size ** 2) - 2 * np.outer(e_i, one_S.T) / S_size + np.outer(e_i, e_i.T)
+    A = np.outer(one_S, one_S) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
     debugA(i, S, A)
     vecA1.append(A)
 
@@ -30,7 +34,7 @@ def deriveA2(i, S):
     for s in S:
         s_x = s.x
         one_S[s_x] = 1
-    A = np.outer(one_S, one_S.T) / (S_size ** 2) - 2 * np.outer(e_i, one_S.T) / S_size + np.outer(e_i, e_i.T)
+    A = np.outer(one_S, one_S.T) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
     debugA(i, S, A)
     A *= -1
     vecA2.append(A)
