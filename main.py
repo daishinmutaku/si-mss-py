@@ -12,17 +12,17 @@ import param
 def main():
     for i in range(param.EXPERIMENT_NUM):
         start = time.time()
-        experiment()
+        experiment(i)
         elapsed_time = time.time() - start
         print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 
 
-def experiment():
-    data.init_X_origin()
+def experiment(i):
+    data.init_X_origin(i)
     se.init_vecA()
     result = mss.segmentation()
-    selective_p = si.inference(result)
-    if selective_p >= 0:
+    if param.DO_INFERENCE:
+        selective_p = si.inference(result)
         csv_writer.csv_write([selective_p])
 
 

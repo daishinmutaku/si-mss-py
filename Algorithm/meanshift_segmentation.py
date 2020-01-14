@@ -40,9 +40,11 @@ def meanshift(X, h, N, x_i):
             if dif <= h:
                 S.append(x_j)
                 v_m += v_j
-                se.deriveA1(x_j.x, S_old)
+                if param.DO_INFERENCE:
+                    se.deriveA1(x_j.x, S_old)
             else:
-                se.deriveA2(x_j.x, S_old)
+                if param.DO_INFERENCE:
+                    se.deriveA2(x_j.x, S_old)
         if len(S) == 0:
             break
         v_m /= len(S)
