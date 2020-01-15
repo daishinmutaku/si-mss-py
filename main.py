@@ -11,10 +11,10 @@ import param
 
 def main():
     for i in range(param.EXPERIMENT_NUM):
-        # start = time.time()
+        start = time.time()
         experiment(i)
-        # elapsed_time = time.time() - start
-        # print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        elapsed_time = time.time() - start
+        print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 
 
 def experiment(i):

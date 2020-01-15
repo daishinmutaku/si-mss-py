@@ -60,11 +60,11 @@
 \begin{document}
 	入力
 	\begin{itemize}
-		\item $X \in \mathbb{R}^{nd}$: 画像データベクトル(浮動小数)
+		\item $X \in \mathbb{R}^{nd}$: 画像データ行列(浮動小数)
 	\end{itemize}
 	出力
 	\begin{itemize}
-		\item $Y \in \mathbb{R}^{nd}$: アルゴリズム適用後の画像データベクトル(浮動小数)
+		\item $Y \in \mathbb{R}^{nd}$: アルゴリズム適用後の画像データ行列(浮動小数)
 	\end{itemize}
 	ハイパーパラメータ
 	\begin{itemize}
@@ -77,7 +77,9 @@
 		\item $x$: ピクセルのオブジェクト. 以下のデータ構造を持つ.
 		\begin{itemize}
 			\item value: 輝度値
-			\item index: $X$ 上での $x$ の位置(添字)
+			\item x: x座標
+			\item y: y座標
+			% \item index: $X$ 上での $x$ の位置(添字)
 		\end{itemize}
 	\end{itemize}
 
@@ -96,8 +98,8 @@
 		\label{alg:s}
 		\begin{algorithmic}[1]
 			\Function{segmentation}{X}
-				\For{$x_i \in$ X}
-					\State{$Y$[$x_i$.index].value $=$ \Call{meanshift}{$x_i$}} \Comment{$x_i$ の輝度値を周辺局所範囲内のピーク値へ更新し, $Y$ へ代入}
+				\For{$x \in$ X}
+					\State{$Y$[$x$.x][$x$.y].value $=$ \Call{meanshift}{$x$}} \Comment{$x$ の輝度値を周辺局所範囲内のピーク値へ更新し, $Y$ へ代入}
 				\EndFor
 				\State{\Return{Y}}
 			\EndFunction
@@ -108,18 +110,18 @@
 		\caption{Meanshift}
 		\label{alg:ms}
 		\begin{algorithmic}[1]
-			\Function{meanshift}{$v_i$} \Comment{輝度値 $v_i$ を 更新するアルゴリズム}
-				\For{$n = 0, \ldots , N$} \Comment{$v_i$ を中心とする周辺局所範囲に基づいた更新を $N$ 回行う}
-					\State{$v_{sum} = 0$, $S =$ []} \Comment{周辺局所範囲のピクセルの集合 $S$ と $S$ 内の輝度値の合計の初期化}
-					\State{$S_{h_s}$ $=$ \Call{make Shs}{$x_i, X$}} \Comment{$h_s$ に基づいた局所範囲内のピクセルの集合を作成}
-					\State{$S_{h_s, h_r}$ $=$ \Call{make Shr}{$x_i, S_{h_s}$}} \Comment{$h_r$ に基づいた局所範囲内のピクセルの集合を作成}
-					
+			\Function{meanshift}{$x$} \Comment{$x$ を更新するアルゴリズム}
+				\For{$n = 0, \ldots , N$} \Comment{$x$ を中心とする周辺局所範囲に基づいた更新を $N$ 回行う}
+					\State{$S_{h_s}$ $=$ \Call{make Shs}{$x, X$}} \Comment{$h_s$ に基づいた局所範囲内のピクセルの集合を作成}
+					\State{$S_{h_s, h_r}$ $=$ \Call{make Shr}{$x, S_{h_s}$}} \Comment{$h_r$ に基づいた局所範囲内のピクセルの集合を作成}
 					\If{$|S_{h_s, h_r}|$ == 0}
 						\State{break}
 					\EndIf
+					\State{$x.\mathrm{x} =$ \Call{mean x}{$S_{h_s, h_r}$}} \Comment{$x$.x を周辺範囲内のピクセルのx座標の平均へ更新}
+					\State{$x.\mathrm{y} =$ \Call{mean y}{$S_{h_s, h_r}$}} \Comment{$x$.y を周辺範囲内のピクセルのy座標の平均へ更新}
 					\State{$x.\mathrm{value} =$ \Call{mean value}{$S_{h_s, h_r}$}} \Comment{$x$.value を周辺範囲内のピクセルの輝度値の平均へ更新}
 				\EndFor
-				\State{\Return{$v_i$}}
+				\State{\Return{$x$}}
 			\EndFunction
 		\end{algorithmic}
 	\end{algorithm}
@@ -129,12 +131,15 @@
 		\label{alg:mss}
 		\begin{algorithmic}[1]
 			\Function{make Shs}{$x, X$}
+			\State{$S = []$} \Comment {画像空間周辺範囲内のピクセルの集合 $S$ の初期化}
 				\For{$x_i \in$ X} \Comment {$X$ 内の全てのピクセルを対象に $x$ を中心とする画像空間周辺範囲の内外判定}
-					\State{dif $= |x.\mathrm{value} - x_s.\mathrm{value}|$} \Comment{周辺範囲の中心の輝度値 $x$.value と輝度値 $x_s$.value の差}
-					\If{dif $\le h_r$}
-						\State{$S \leftarrow x_s$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
+				\State{$d_x = |x.\mathrm{x} - x_i.\mathrm{x}|$} \Comment{$x_i$ と $x$ のx軸距離}
+				\State{$d_y = |x.\mathrm{y} - x_i.\mathrm{y}|$} \Comment{$x_i$ と $x$ のy軸距離}
+					\If{$d_x \le h_s$ and $d_y \le h_s$}
+						\State{$S \leftarrow x_i$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
 					\EndIf
 				\EndFor
+				\State{\Return{$S$}}
 			\EndFunction
 		\end{algorithmic}
 	\end{algorithm}
@@ -143,13 +148,15 @@
 		\caption{make Shr}
 		\label{alg:mss}
 		\begin{algorithmic}[1]
-			\Function{make Shr}{$x, S$}
-				\For{$x_s \in$ S} \Comment {$S$ 内の全ての輝度値を対象に $v_i$ を中心とする色空間周辺範囲の内外判定}
-					\State{dif $= |x.\mathrm{value} - x_s.\mathrm{value}|$} \Comment{周辺範囲の中心の輝度値 $x$.value と輝度値 $x_s$.value の差}
-					\If{dif $\le h_r$}
-						\State{$S \leftarrow x_s$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
+			\Function{make Shr}{$x, X$}
+			\State{$S = []$} \Comment {画像空間周辺範囲内のピクセルの集合 $S$ の初期化}
+				\For{$x_i \in$ X} \Comment {$S$ 内の全てのピクセルを対象に $x_i$ を中心とする色空間周辺範囲の内外判定}
+					\State{$d = |x.\mathrm{value} - x_i.\mathrm{value}|$} \Comment{周辺範囲の中心の輝度値 $x$.value と輝度値 $x_i$.value の差}
+					\If{$d \le h_r$}
+						\State{$S \leftarrow x_i$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
 					\EndIf
 				\EndFor
+				\State{\Return{$S$}}
 			\EndFunction
 		\end{algorithmic}
 	\end{algorithm}
