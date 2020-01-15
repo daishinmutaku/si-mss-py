@@ -76,9 +76,9 @@ def generate_interval(C, Z):
     """
     quadratic_interval = c_func.QuadraticInterval()
     for A in se.vecA1:
-        generate_LU(C, Z, A, -(param.RANGE ** 2), quadratic_interval)
+        generate_LU(C, Z, A, -(param.H_R ** 2), quadratic_interval)
     for A in se.vecA2:
-        generate_LU(C, Z, A, param.RANGE ** 2, quadratic_interval)
+        generate_LU(C, Z, A, param.H_R ** 2, quadratic_interval)
     interval = quadratic_interval.get()
     print(interval)
 

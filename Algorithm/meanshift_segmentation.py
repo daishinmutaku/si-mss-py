@@ -10,7 +10,7 @@ import artificial_data as data
 def segmentation():
     size = param.SIZE
     result = [0] * size
-    h = param.RANGE
+    h = param.H_R
     N = max([param.N, 1])
     X = convert_pixels(size)
     for x_i in X:

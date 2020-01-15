@@ -1,0 +1,157 @@
+% \documentclass[a4paper]{jarticle} % 一般的なスタイルの書き方
+\documentclass[a4paper]{ujarticle} % 2段構成のスタイル
+%\documentclass[a4paper]{jreport} %卒論原稿はこのスタイル
+\setlength{\topmargin}{-2.04cm}%例:上余白を設定
+\setlength{\oddsidemargin}{-1.04cm}%例:左余白を1.5cmにする
+\setlength{\evensidemargin}{-1.04cm}%例b:左余白を1.5cmにする
+\setlength{\textwidth}{18cm}%例:一行の幅を18cmにする
+\setlength{\textheight}{25cm}%例:一ページの文章の縦の長さを25cmにする
+%\setlength{\textwidth}{45em}%例:一行の文字数を45文字にする(未使用)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% usepaclagae 群
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,bm} %多次元空間ベクトルRを表記するのに必要
+\usepackage{amsfonts}
+\usepackage{ascmac} %枠付き文章を表記するのに必
+\usepackage{amssymb}
+% \mathbb{R}^{l} %表記例
+\usepackage{algorithm}
+% \usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{color}
+\usepackage{here} %[hbtp]の代わりに[H]と書きこむと強制的にその場所に図や表を挿入す
+\pagestyle{empty}%ページ番号を表示しない
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits}
+\newcommand{\argmin}{\mathop{\rm arg~min}\limits}
+\newcommand{\bX}{\bm{X}}
+\newcommand{\bmu}{\bm{\mu}}
+\newcommand{\bSigma}{\bm{\Sigma}}
+\newcommand{\bx}{\bm{x}}
+\newcommand{\by}{\bm{y}}
+\newcommand{\zl}{\rightarrow}
+\newcommand{\zh}{\leftarrow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtheorem{lem}{補題}
+
+\makeatletter
+\def\@maketitle{%
+\begin{center}%
+{\LARGE \@title \par}% タイトル
+\end{center}%
+\begin{flushright}%
+{\large \@date}% 日付
+\end{flushright}%
+\begin{flushright}%%
+{\large \@author}% 著者
+\end{flushright}%
+\par\vskip 1.5em
+}
+\makeatother
+\title{Meanshift Segmentation} %ここにタイトルを記入すること.
+\date{\today}
+\author{大森 夢拓}
+
+\begin{document}
+	入力
+	\begin{itemize}
+		\item $X \in \mathbb{R}^{nd}$: 画像データベクトル(浮動小数)
+	\end{itemize}
+	出力
+	\begin{itemize}
+		\item $Y \in \mathbb{R}^{nd}$: アルゴリズム適用後の画像データベクトル(浮動小数)
+	\end{itemize}
+	ハイパーパラメータ
+	\begin{itemize}
+		\item $h_s$: 画像空間の周辺範囲
+		\item $h_r$: 輝度値の周辺範囲
+		\item $N$: meanshiftのループ回数
+	\end{itemize}
+	その他
+	\begin{itemize}
+		\item $x$: ピクセルのオブジェクト. 以下のデータ構造を持つ.
+		\begin{itemize}
+			\item value: 輝度値
+			\item index: $X$ 上での $x$ の位置(添字)
+		\end{itemize}
+	\end{itemize}
+
+	\begin{algorithm}[H]
+		\caption{Meanshift Segmentation}
+		\label{alg:mss}
+		\begin{algorithmic}[1]
+			\Function{meanshift segmentation}{$X$}
+				\State{$Y = $ \Call{segmentation}{X}}
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+	
+	\begin{algorithm}[H]
+		\caption{Segmentation}
+		\label{alg:s}
+		\begin{algorithmic}[1]
+			\Function{segmentation}{X}
+				\For{$x_i \in$ X}
+					\State{$Y$[$x_i$.index].value $=$ \Call{meanshift}{$x_i$}} \Comment{$x_i$ の輝度値を周辺局所範囲内のピーク値へ更新し, $Y$ へ代入}
+				\EndFor
+				\State{\Return{Y}}
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+
+	\begin{algorithm}[H]
+		\caption{Meanshift}
+		\label{alg:ms}
+		\begin{algorithmic}[1]
+			\Function{meanshift}{$v_i$} \Comment{輝度値 $v_i$ を 更新するアルゴリズム}
+				\For{$n = 0, \ldots , N$} \Comment{$v_i$ を中心とする周辺局所範囲に基づいた更新を $N$ 回行う}
+					\State{$v_{sum} = 0$, $S =$ []} \Comment{周辺局所範囲のピクセルの集合 $S$ と $S$ 内の輝度値の合計の初期化}
+					\State{$S_{h_s}$ $=$ \Call{make Shs}{$x_i, X$}} \Comment{$h_s$ に基づいた局所範囲内のピクセルの集合を作成}
+					\State{$S_{h_s, h_r}$ $=$ \Call{make Shr}{$x_i, S_{h_s}$}} \Comment{$h_r$ に基づいた局所範囲内のピクセルの集合を作成}
+					
+					\If{$|S_{h_s, h_r}|$ == 0}
+						\State{break}
+					\EndIf
+					\State{$x.\mathrm{value} =$ \Call{mean value}{$S_{h_s, h_r}$}} \Comment{$x$.value を周辺範囲内のピクセルの輝度値の平均へ更新}
+				\EndFor
+				\State{\Return{$v_i$}}
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+			
+	\begin{algorithm}[H]
+		\caption{make Shs}
+		\label{alg:mss}
+		\begin{algorithmic}[1]
+			\Function{make Shs}{$x, X$}
+				\For{$x_i \in$ X} \Comment {$X$ 内の全てのピクセルを対象に $x$ を中心とする画像空間周辺範囲の内外判定}
+					\State{dif $= |x.\mathrm{value} - x_s.\mathrm{value}|$} \Comment{周辺範囲の中心の輝度値 $x$.value と輝度値 $x_s$.value の差}
+					\If{dif $\le h_r$}
+						\State{$S \leftarrow x_s$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
+					\EndIf
+				\EndFor
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+
+	\begin{algorithm}[H]
+		\caption{make Shr}
+		\label{alg:mss}
+		\begin{algorithmic}[1]
+			\Function{make Shr}{$x, S$}
+				\For{$x_s \in$ S} \Comment {$S$ 内の全ての輝度値を対象に $v_i$ を中心とする色空間周辺範囲の内外判定}
+					\State{dif $= |x.\mathrm{value} - x_s.\mathrm{value}|$} \Comment{周辺範囲の中心の輝度値 $x$.value と輝度値 $x_s$.value の差}
+					\If{dif $\le h_r$}
+						\State{$S \leftarrow x_s$} \Comment{$x$ が周辺範囲内のピクセルであれば集合 $S$ へ追加}
+					\EndIf
+				\EndFor
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}
+
+\end{document}
