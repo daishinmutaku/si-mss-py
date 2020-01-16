@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.14159265-p3.8.1-u1.23-180226-2.6 (utf8.uptex) (TeX Live 2018) (preloaded format=uplatex 2019.2.12)  15 JAN 2020 16:39
+This is e-upTeX, Version 3.14159265-p3.8.1-u1.23-180226-2.6 (utf8.uptex) (TeX Live 2018) (preloaded format=uplatex 2019.2.12)  16 JAN 2020 13:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -212,9 +212,6 @@ File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
 
 LaTeX Warning: Label `alg:mss' multiply defined.
 
-
-LaTeX Warning: Label `alg:mss' multiply defined.
-
 )
 \openout1 = `資料.aux'.
 
@@ -261,30 +258,30 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 63.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `JT2/mc/bx/n' in size <10> not available
-(Font)              Font shape `JT2/gt/m/n' tried instead on input line 79.
+(Font)              Font shape `JT2/gt/m/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `JT2/gt/m/n' will be
-(Font)              scaled to size 9.6222pt on input line 79.
+(Font)              scaled to size 9.6222pt on input line 77.
 LaTeX Font Info:    Font shape `JY2/mc/bx/n' in size <10> not available
-(Font)              Font shape `JY2/gt/m/n' tried instead on input line 79.
+(Font)              Font shape `JY2/gt/m/n' tried instead on input line 77.
 LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
-(Font)              scaled to size 9.6222pt on input line 79.
+(Font)              scaled to size 9.6222pt on input line 77.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 90.
+(Font)              scaled to size 7.69775pt on input line 80.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 90.
+(Font)              scaled to size 7.69775pt on input line 80.
 
 
 LaTeX Font Warning: Font shape `JT2/mc/m/sc' undefined
-(Font)              using `JT2/mc/m/n' instead on input line 90.
+(Font)              using `JT2/mc/m/n' instead on input line 80.
 
 
 LaTeX Font Warning: Font shape `JY2/mc/m/sc' undefined
-(Font)              using `JY2/mc/m/n' instead on input line 90.
+(Font)              using `JY2/mc/m/n' instead on input line 80.
 
 LaTeX Font Info:    Font shape `JT2/mc/m/sc' will be
-(Font)              scaled to size 9.6222pt on input line 91.
+(Font)              scaled to size 9.6222pt on input line 81.
 LaTeX Font Info:    Font shape `JY2/mc/m/sc' will be
-(Font)              scaled to size 9.6222pt on input line 91.
+(Font)              scaled to size 9.6222pt on input line 81.
 [1
 
 ] [2] (./資料.aux)
@@ -296,12 +293,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 2480 strings out of 493215
- 31205 string characters out of 6144072
- 109172 words of memory out of 5000000
- 6446 multiletter control sequences out of 15000+600000
+ 2484 strings out of 493215
+ 31266 string characters out of 6144072
+ 110172 words of memory out of 5000000
+ 6450 multiletter control sequences out of 15000+600000
  11720 words of font info for 54 fonts, out of 8000000 for 9000
  929 hyphenation exceptions out of 8191
- 27i,5n,25p,283b,358s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 27i,5n,25p,283b,362s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 資料.dvi (2 pages, 7584 bytes).
+Output written on 資料.dvi (2 pages, 6780 bytes).
