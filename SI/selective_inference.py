@@ -8,7 +8,7 @@ from statistics import mean
 
 
 def inference(result):
-    H, err = generate_eta_mat(result)
+    H, err = generate_eta_mat_random(result)
     if err:
         return -1
     HTX = np.dot(H, data.X_origin)
@@ -21,7 +21,7 @@ def inference(result):
     return selective_p
 
 
-def generate_eta_mat(result):
+def generate_eta_mat_sizemax2(result):
     H_all = []
     area_value_list = []
     count_list = []
@@ -51,6 +51,31 @@ def generate_eta_mat(result):
         H[i] -= eta / count_list[second_area_index]
 
     return H, False
+
+
+def generate_eta_mat_random(result):
+    H_all = []
+    area_value_list = []
+    count_list = []
+    for index, value in enumerate(result):
+        if value not in area_value_list:
+            area_value_list.append(value)
+            eta = np.zeros(len(result))
+            H_all.append(eta)
+            count_list.append(0)
+        area_num = area_value_list.index(value)
+        eta = H_all[area_num]
+        eta[index] += 1
+        count_list[area_num] += 1
+    print("領域数: ", len(H_all))
+    if len(H_all) < 2:
+        return None, True
+    H = np.array(H_all[0]) / count_list[0]
+    for i, eta in enumerate(np.array(H_all[1])):
+        H[i] -= eta / count_list[1]
+
+    return H, False
+
 
 def generate_sigma(H):
     cov = np.identity(param.SIZE) * param.SIGMA

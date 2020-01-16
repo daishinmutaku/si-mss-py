@@ -24,7 +24,8 @@ def experiment(i):
     print(result)
     if param.DO_INFERENCE:
         selective_p = si.inference(result)
-        csv_writer.csv_write([selective_p])
+        if selective_p > 0:
+            csv_writer.csv_write([selective_p])
 
 
 if __name__ == "__main__":

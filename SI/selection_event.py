@@ -11,33 +11,39 @@ def init_vecA():
     vecA2 = []
 
 
-def deriveA1(i, S):
+def deriveA1(x, y, S):
+    i = xy_to_i(x, y)
     n = param.SIZE
     e_i = np.zeros(n)
     e_i[i] = 1
     S_size = len(S)
     one_S = np.zeros(n)
     for s in S:
-        s_x = s.x
-        one_S[s_x] = 1
+        index = xy_to_i(s[0], s[1])
+        one_S[index] = 1
     A = np.outer(one_S, one_S) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
-    debugA(i, S, A)
+    # debugA(i, S, A)
     vecA1.append(A)
 
 
-def deriveA2(i, S):
+def deriveA2(x, y, S):
+    i = xy_to_i(x, y)
     n = param.SIZE
     e_i = np.zeros(n)
     e_i[i] = 1
     S_size = len(S)
     one_S = np.zeros(n)
     for s in S:
-        s_x = s.x
-        one_S[s_x] = 1
+        index = xy_to_i(s[0], s[1])
+        one_S[index] = 1
     A = np.outer(one_S, one_S.T) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
-    debugA(i, S, A)
+    # debugA(i, S_v, A)
     A *= -1
     vecA2.append(A)
+
+
+def xy_to_i(x, y):
+    return x + y * param.EDGE
 
 
 def debugA(i, S, A):
@@ -53,3 +59,5 @@ def mean_value(S):
     for s in S:
         sum += s.value
     return sum / len(S)
+
+
