@@ -4,9 +4,8 @@ from Algorithm import meanshift_segmentation as mss
 from SI import selective_inference as si
 from SI import selection_event as se
 from IO import csv_writer
-import artificial_data as data
+import image_data as data
 import param
-
 
 
 def main():

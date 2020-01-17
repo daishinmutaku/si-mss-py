@@ -2,19 +2,23 @@
 
 import param
 from SI import selection_event as se
-import artificial_data as data
+import image_data as data
 import numpy as np
 import math
 
 
 # SI対象のアルゴリズム
 def segmentation():
-    X = np.reshape(np.array(data.X_origin), (param.EDGE, param.EDGE))
-    Y = np.zeros((param.EDGE, param.EDGE))
-    for y in range(X.shape[0]):
-        for x in range(X.shape[1]):
+    X = data.X_origin
+    height = X.shape[0]
+    width = X.shape[1]
+    Y = np.zeros((height, width))
+    for y in range(height):
+        print("y: ", y)
+        for x in range(width):
+            print("\tx: ", x)
             Y[y][x] = meanshift(x, y, X)
-    vec_Y = np.reshape(Y, param.SIZE)
+    vec_Y = np.reshape(Y, height * width)
 
     return list(vec_Y)
 
@@ -24,8 +28,10 @@ def meanshift(x, y, X):
     v = X[y][x]
     S = [(x, y)]
     for n in range(N):
+        print("\t\tn: ", n)
         S, x, y, v = make_S(x, y, v, X, S)
         if len(S) == 0:
+            print("\t\tBREAK!", n)
             break
     return v
 
@@ -44,15 +50,17 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     for y in range(y_min, y_max):
         for x in range(x_min, x_max):
             v = X[y][x]
-            d = abs(v - v_c)
+            d = abs(int(v) - int(v_c))
             if d <= h_r:
                 S.append((x, y))
                 x_sum += x
                 y_sum += y
                 v_sum += v
-                se.deriveA1(x, y, S_prev)
+                if param.DO_INFERENCE:
+                    se.deriveA1(x, y, S_prev)
             else:
-                se.deriveA2(x, y, S_prev)
+                if param.DO_INFERENCE:
+                    se.deriveA2(x, y, S_prev)
     if len(S) == 0:
         return S, x_c, y_c, v_c
 

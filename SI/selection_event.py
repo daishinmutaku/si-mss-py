@@ -1,6 +1,5 @@
 import numpy as np
-import param
-import artificial_data as data
+import image_data as data
 
 vecA1 = []
 vecA2 = []
@@ -13,7 +12,7 @@ def init_vecA():
 
 def deriveA1(x, y, S):
     i = xy_to_i(x, y)
-    n = param.SIZE
+    n = data.X_origin.shape[0] * data.X_origin.shape[1]
     e_i = np.zeros(n)
     e_i[i] = 1
     S_size = len(S)
@@ -28,7 +27,7 @@ def deriveA1(x, y, S):
 
 def deriveA2(x, y, S):
     i = xy_to_i(x, y)
-    n = param.SIZE
+    n = data.X_origin.shape[0] * data.X_origin.shape[1]
     e_i = np.zeros(n)
     e_i[i] = 1
     S_size = len(S)
@@ -43,7 +42,7 @@ def deriveA2(x, y, S):
 
 
 def xy_to_i(x, y):
-    return x + y * param.EDGE
+    return x + y * data.X_origin.shape[1]
 
 
 def debugA(i, S, A):

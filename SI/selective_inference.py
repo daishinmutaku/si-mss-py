@@ -3,7 +3,7 @@ import numpy as np
 import param
 from SI import selection_event as se
 from SI import common_function as c_func
-import artificial_data as data
+import image_data as data
 from statistics import mean
 
 
@@ -11,11 +11,12 @@ def inference(result):
     H, err = generate_eta_mat_random(result)
     if err:
         return -1
-    HTX = np.dot(H, data.X_origin)
-    debug_tau(H, HTX)
+    vecX = data.X_origin.reshape(data.X_origin.shape[0] * data.X_origin.shape[1])
+    HTX = np.dot(H, vecX)
+    debug_tau(H, HTX, vecX)
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
-    Z = generate_z_mat(C, HTX)
+    Z = generate_z_mat(C, HTX, vecX)
     interval = generate_interval(C, Z)
     selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
@@ -78,7 +79,7 @@ def generate_eta_mat_random(result):
 
 
 def generate_sigma(H):
-    cov = np.identity(param.SIZE) * param.SIGMA
+    cov = np.identity(data.X_origin.shape[0] * data.X_origin.shape[1]) * param.SIGMA
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
     print("分散:", sigma)
@@ -90,8 +91,8 @@ def generate_c_mat(cov_H, sigma):
     return C
 
 
-def generate_z_mat(C, HTX):
-    Z = data.X_origin - C * HTX
+def generate_z_mat(C, HTX, vecX):
+    Z = vecX - C * HTX
     return Z
 
 
@@ -133,14 +134,14 @@ def generate_selective_p(HTX, sigma, interval):
     return selective_p
 
 
-def debug_tau(H, HTX):
+def debug_tau(H, HTX, vecX):
     area0 = []
     area1 = []
     for i, v in enumerate(H):
         if v > 0:
-            area0.append(data.X_origin[i])
+            area0.append(vecX[i])
         elif v < 0:
-            area1.append(data.X_origin[i])
+            area1.append(vecX[i])
     mean0 = mean(area0)
     mean1 = mean(area1)
     print("領域0の平均: ", mean0)
