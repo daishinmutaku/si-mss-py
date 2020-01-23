@@ -17,7 +17,7 @@ def inference(result):
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
     Z = generate_z_mat(C, HTX, vecX)
-    interval = generate_interval(C, Z)
+    interval = generate_interval(vecX, HTX, C, Z)
     selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
 
@@ -96,22 +96,53 @@ def generate_z_mat(C, HTX, vecX):
     return Z
 
 
-def generate_interval(C, Z):
+def generate_interval(vecX, HTX, C, Z):
     """
     toda's program
     """
+    quadratic_interval_by_mat = c_func.QuadraticInterval()
+    for A in se.vec_mat_A1:
+        generate_LU_by_mat(C, Z, A, -(param.H_R ** 2), quadratic_interval_by_mat)
+    for A in se.vec_mat_A2:
+        generate_LU_by_mat(C, Z, A, param.H_R ** 2, quadratic_interval_by_mat)
+    interval = quadratic_interval_by_mat.get()
+    print(interval)
+    print("ここからスカラー")
     quadratic_interval = c_func.QuadraticInterval()
-    for A in se.vecA1:
-        generate_LU(C, Z, A, -(param.H_R ** 2), quadratic_interval)
-    for A in se.vecA2:
-        generate_LU(C, Z, A, param.H_R ** 2, quadratic_interval)
+    for A in se.vec_A1:
+        generate_LU(vecX, HTX, C, A, param.H_R ** 2, 1, quadratic_interval, Z)
+    print("ここからA2")
+    for A in se.vec_A2:
+        generate_LU(vecX, HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval, Z)
     interval = quadratic_interval.get()
     print(interval)
 
     return interval
 
 
-def generate_LU(C, Z, A, c, quadratic_interval):
+def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval, Z):
+    C_center = make_center(C, A.S)
+    X_center = make_center(X, A.S)
+
+    # スカラー演算
+    alpha = sgn * (C[A.i] - C_center) ** 2
+    xAc = X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center
+    xAc *= sgn
+    beta = xAc + xAc - 2 * alpha * HTX
+    gamma = alpha * (HTX ** 2) - (xAc + xAc) * HTX + (X[A.i] - X_center) ** 2 - h
+
+    quadratic_interval.cut(alpha, beta, gamma)
+
+
+def make_center(vec, S):
+    vec_S = []
+    for s in S:
+        vec_S.append(vec[s])
+
+    return mean(vec_S)
+
+
+def generate_LU_by_mat(C, Z, A, c, quadratic_interval):
     if A.ndim == 1:
         alpha = 0
         beta = np.dot(A.T, C)
@@ -125,6 +156,7 @@ def generate_LU(C, Z, A, c, quadratic_interval):
         gamma = zaz + c
     else:
         exit()
+
     quadratic_interval.cut(alpha, beta, gamma)
 
 

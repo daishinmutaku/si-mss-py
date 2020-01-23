@@ -1,16 +1,19 @@
 import numpy as np
 import image_data as data
+import Model.matA as matA
 
-vecA1 = []
-vecA2 = []
+vec_mat_A1 = []
+vec_mat_A2 = []
+vec_A1 = []
+vec_A2 = []
 
 def init_vecA():
-    global vecA1, vecA2
-    vecA1 = []
-    vecA2 = []
+    global vec_mat_A1, vec_mat_A2
+    vec_mat_A1 = []
+    vec_mat_A2 = []
 
 
-def deriveA1(x, y, S):
+def derive_mat_A1(x, y, S):
     i = xy_to_i(x, y)
     n = data.X_origin.shape[0] * data.X_origin.shape[1]
     e_i = np.zeros(n)
@@ -22,10 +25,12 @@ def deriveA1(x, y, S):
         one_S[index] = 1
     A = np.outer(one_S, one_S) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
     # debugA(i, S, A)
-    vecA1.append(A)
+    vec_mat_A1.append(A)
+    A = makeA(x, y, S)
+    vec_A1.append(A)
 
 
-def deriveA2(x, y, S):
+def derive_mat_A2(x, y, S):
     i = xy_to_i(x, y)
     n = data.X_origin.shape[0] * data.X_origin.shape[1]
     e_i = np.zeros(n)
@@ -38,7 +43,18 @@ def deriveA2(x, y, S):
     A = np.outer(one_S, one_S.T) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
     # debugA(i, S_v, A)
     A *= -1
-    vecA2.append(A)
+    vec_mat_A2.append(A)
+    A = makeA(x, y, S)
+    vec_A2.append(A)
+
+def makeA(x, y, S):
+    i = xy_to_i(x, y)
+    vecS = []
+    for s in S:
+        vecS.append(xy_to_i(s[0], s[1]))
+    A = matA.A(i, vecS)
+
+    return A
 
 
 def xy_to_i(x, y):
