@@ -46,7 +46,7 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     for y in range(y_min, y_max):
         for x in range(x_min, x_max):
             v = X[y][x]
-            d = abs(int(v) - int(v_c))
+            d = abs(v - v_c)
             if d <= h_r:
                 S.append((x, y))
                 x_sum += x

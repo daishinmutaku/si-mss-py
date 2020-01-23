@@ -100,22 +100,31 @@ def generate_interval(vecX, HTX, C, Z):
     """
     toda's program
     """
+
     quadratic_interval_by_mat = c_func.QuadraticInterval()
-    for A in se.vec_mat_A1:
-        generate_LU_by_mat(C, Z, A, -(param.H_R ** 2), quadratic_interval_by_mat)
-    for A in se.vec_mat_A2:
-        generate_LU_by_mat(C, Z, A, param.H_R ** 2, quadratic_interval_by_mat)
-    interval = quadratic_interval_by_mat.get()
-    print(interval)
-    print("ここからスカラー")
     quadratic_interval = c_func.QuadraticInterval()
-    for A in se.vec_A1:
-        generate_LU(vecX, HTX, C, A, param.H_R ** 2, 1, quadratic_interval, Z)
-    print("ここからA2")
-    for A in se.vec_A2:
-        generate_LU(vecX, HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval, Z)
-    interval = quadratic_interval.get()
-    print(interval)
+    for i, A in enumerate(se.vec_mat_A1):
+        am, bm, cm = generate_LU_by_mat(C, Z, A, -(param.H_R ** 2), quadratic_interval_by_mat)
+        a, b, c = generate_LU(vecX, HTX, C, se.vec_A1[i], param.H_R ** 2, 1, quadratic_interval, Z)
+        if abs(am - a) > 1e-10:
+            print("am: ", am, "a: ", a)
+        if abs(bm - b) > 1e-10:
+            print("bm: ", bm, "b: ", b)
+        if abs(cm - c) > 1e-10:
+            print("cm: ", cm, "c: ", c)
+    print("A2")
+    for i, A in enumerate(se.vec_mat_A2):
+        am, bm, cm = generate_LU_by_mat(C, Z, A, param.H_R ** 2, quadratic_interval_by_mat)
+        a, b, c = generate_LU(vecX, HTX, C, se.vec_A2[i], -(param.H_R ** 2), -1, quadratic_interval, Z)
+        if abs(am - a) > 1e-10:
+            print("am: ", am, "a: ", a)
+        if abs(bm - b) > 1e-10:
+            print("bm: ", bm, "b: ", b)
+        if abs(cm - c) > 1e-10:
+            print("cm: ", cm, "c: ", c)
+    interval = quadratic_interval_by_mat.get()
+    print(quadratic_interval_by_mat.get())
+    print(quadratic_interval.get())
 
     return interval
 
@@ -125,13 +134,20 @@ def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval, Z):
     X_center = make_center(X, A.S)
 
     # スカラー演算
+    xAc = sgn * (X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center)
+    xAx = sgn * (X[A.i] - X_center) ** 2
+    k = 2 * xAc
+    l = xAx - h
+
     alpha = sgn * (C[A.i] - C_center) ** 2
-    xAc = X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center
-    xAc *= sgn
-    beta = xAc + xAc - 2 * alpha * HTX
-    gamma = alpha * (HTX ** 2) - (xAc + xAc) * HTX + (X[A.i] - X_center) ** 2 - h
+    # beta = xAc + xAc - 2 * alpha * HTX
+    beta = k - 2 * alpha * HTX
+    # gamma = alpha * (HTX ** 2) - (xAc + xAc) * HTX + sgn * (X[A.i] - X_center) ** 2 - h
+    gamma = l - k * HTX + alpha * HTX ** 2
 
     quadratic_interval.cut(alpha, beta, gamma)
+
+    return alpha, beta, gamma
 
 
 def make_center(vec, S):
@@ -158,6 +174,8 @@ def generate_LU_by_mat(C, Z, A, c, quadratic_interval):
         exit()
 
     quadratic_interval.cut(alpha, beta, gamma)
+
+    return alpha, beta, gamma
 
 
 def generate_selective_p(HTX, sigma, interval):

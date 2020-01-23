@@ -8,9 +8,11 @@ vec_A1 = []
 vec_A2 = []
 
 def init_vecA():
-    global vec_mat_A1, vec_mat_A2
+    global vec_mat_A1, vec_mat_A2, vec_A1, vec_A2
     vec_mat_A1 = []
     vec_mat_A2 = []
+    vec_A1 = []
+    vec_A2 = []
 
 
 def derive_mat_A1(x, y, S):
@@ -46,6 +48,7 @@ def derive_mat_A2(x, y, S):
     vec_mat_A2.append(A)
     A = makeA(x, y, S)
     vec_A2.append(A)
+
 
 def makeA(x, y, S):
     i = xy_to_i(x, y)
