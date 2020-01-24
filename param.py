@@ -18,8 +18,8 @@ H_S = 4
 
 # その他
 COLOR_RANGE = 256
-EXPERIMENT_NUM = 1
-START_I = args[1]
+EXPERIMENT_NUM = 1000
+START_I = int(args[1])
 DO_INFERENCE = False
 DO_IMAGE = False
 IS_LOCAL = False
