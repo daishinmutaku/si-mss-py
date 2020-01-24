@@ -38,15 +38,11 @@ def generate_eta_mat_sizemax2(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    print("領域数: ", len(H_all))
     if len(H_all) < 2:
         return None, True
     argsorted_count_list = np.array(count_list).argsort()[::-1]
     first_area_index = argsorted_count_list[0]
     second_area_index = argsorted_count_list[1]
-    print(count_list)
-    print("1番目: ", count_list[first_area_index])
-    print("2番目: ", count_list[second_area_index])
     eta_max = H_all[first_area_index]
     eta_min = H_all[second_area_index]
     H = np.array(eta_max) / count_list[first_area_index]
@@ -70,7 +66,8 @@ def generate_eta_mat_random(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    print("領域数: ", len(H_all))
+    if param.IS_LOCAL:
+        print("領域数: ", len(H_all))
     if len(H_all) < 2:
         return None, True
     H = np.array(H_all[0]) / count_list[0]
@@ -84,7 +81,6 @@ def generate_sigma(H):
     cov = np.identity(data.X_origin.shape[0] * data.X_origin.shape[1]) * param.SIGMA
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
-    print("分散:", sigma)
     return cov_H, sigma
 
 
@@ -139,7 +135,8 @@ def debug_tau():
             area1.append(vecX[i])
     mean0 = mean(area0)
     mean1 = mean(area1)
-    print("領域0の平均: ", mean0)
-    print("領域1の平均: ", mean1)
-    print("平均の差: ", mean0 - mean1)
-    print("検定統計量:", HTX)
+    if param.IS_LOCAL:
+        print("領域0の平均: ", mean0)
+        print("領域1の平均: ", mean1)
+        print("平均の差: ", mean0 - mean1)
+        print("検定統計量:", HTX)

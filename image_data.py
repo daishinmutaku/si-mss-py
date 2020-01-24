@@ -14,4 +14,5 @@ def init_X_origin(i):
         X_origin = np.random.normal(param.MU0, param.SIGMA, param.SIZE)
         # X_origin = np.concatenate([np.random.normal(param.MU0, param.SIGMA, int(param.SIZE/2)), np.random.normal(param.MU1, param.SIGMA, int(param.SIZE/2))], 0)
         X_origin = np.reshape(np.array(X_origin), (param.EDGE, param.EDGE))
-    print(list(X_origin.reshape(X_origin.shape[0] * X_origin.shape[1])))
+    if param.IS_LOCAL:
+        print(list(X_origin.reshape(X_origin.shape[0] * X_origin.shape[1])))
