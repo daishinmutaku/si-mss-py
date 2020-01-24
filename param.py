@@ -13,13 +13,16 @@ SIZE = int(EDGE ** 2)
 
 # アルゴリズム
 N = 100
-H_R = 8
-H_S = 4
+H_R = 10
+H_S = 2
 
 # その他
-COLOR_RANGE = 256
-EXPERIMENT_NUM = 1000
+COLOR_RAGE = 256
+EXPERIMENT_NUM = int(args[2])
 START_I = int(args[1])
-DO_INFERENCE = False
+
 DO_IMAGE = False
 IS_LOCAL = False
+
+# 設定不必要なパラメータ
+DO_INFERENCE = False
