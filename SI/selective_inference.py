@@ -21,9 +21,9 @@ def inference_ready(result):
     global H, vecX, HTX, sigma, C, quadratic_interval
     H, err = generate_eta_mat_random(result)
     vecX = data.X_origin.reshape(data.X_origin.shape[0] * data.X_origin.shape[1])
-    HTX = np.dot(H, vecX)
     if err:
         return -1
+    HTX = np.dot(H, vecX)
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
 
