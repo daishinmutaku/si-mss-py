@@ -10,8 +10,12 @@ vecX = np.array([])
 HTX = 0
 sigma = []
 C = []
-quadratic_interval = c_func.QuadraticInterval()
+quadratic_interval = None
 
+
+def init_interval():
+    global quadratic_interval
+    quadratic_interval = c_func.QuadraticInterval()
 
 def inference_ready(result):
     global H, vecX, HTX, sigma, C, quadratic_interval

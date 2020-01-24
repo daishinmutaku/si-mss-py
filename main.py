@@ -21,6 +21,7 @@ def main():
 
 def experiment(i):
     data.init_X_origin(i)
+    si.init_interval()
     param.DO_INFERENCE = False
     result = mss.segmentation()
     si.inference_ready(result)
