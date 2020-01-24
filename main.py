@@ -16,7 +16,7 @@ def main():
             elapsed_time = time.time() - start
             print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
         else:
-            experiment(i)
+            experiment(i + param.START_I)
 
 
 def experiment(i):
