@@ -24,11 +24,16 @@ def segmentation():
 def meanshift(x, y, X):
     N = max([param.N, 1])
     v = X[y][x]
-    S = [(x, y)]
+    S_prev = [(x, y)]
     for n in range(N):
-        S, x, y, v = make_S(x, y, v, X, S)
+        S, x, y, v = make_S(x, y, v, X, S_prev)
         if len(S) == 0:
             break
+        list_dif1 = list(set(S) - set(S_prev))
+        list_dif2 = list(set(S_prev) - set(S))
+        if len(list_dif1) == 0 and len(list_dif2) == 0:
+            break
+        S_prev = S
     return v
 
 

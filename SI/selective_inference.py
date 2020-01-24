@@ -16,8 +16,7 @@ def inference(result):
     debug_tau(H, HTX, vecX)
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
-    Z = generate_z_mat(C, HTX, vecX)
-    interval = generate_interval(vecX, HTX, C, Z)
+    interval = generate_interval(vecX, HTX, C)
     selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
 
@@ -96,40 +95,23 @@ def generate_z_mat(C, HTX, vecX):
     return Z
 
 
-def generate_interval(vecX, HTX, C, Z):
+def generate_interval(vecX, HTX, C):
     """
     toda's program
     """
 
-    quadratic_interval_by_mat = c_func.QuadraticInterval()
     quadratic_interval = c_func.QuadraticInterval()
-    for i, A in enumerate(se.vec_mat_A1):
-        am, bm, cm = generate_LU_by_mat(C, Z, A, -(param.H_R ** 2), quadratic_interval_by_mat)
-        a, b, c = generate_LU(vecX, HTX, C, se.vec_A1[i], param.H_R ** 2, 1, quadratic_interval, Z)
-        if abs(am - a) > 1e-10:
-            print("am: ", am, "a: ", a)
-        if abs(bm - b) > 1e-10:
-            print("bm: ", bm, "b: ", b)
-        if abs(cm - c) > 1e-10:
-            print("cm: ", cm, "c: ", c)
-    print("A2")
-    for i, A in enumerate(se.vec_mat_A2):
-        am, bm, cm = generate_LU_by_mat(C, Z, A, param.H_R ** 2, quadratic_interval_by_mat)
-        a, b, c = generate_LU(vecX, HTX, C, se.vec_A2[i], -(param.H_R ** 2), -1, quadratic_interval, Z)
-        if abs(am - a) > 1e-10:
-            print("am: ", am, "a: ", a)
-        if abs(bm - b) > 1e-10:
-            print("bm: ", bm, "b: ", b)
-        if abs(cm - c) > 1e-10:
-            print("cm: ", cm, "c: ", c)
-    interval = quadratic_interval_by_mat.get()
-    print(quadratic_interval_by_mat.get())
-    print(quadratic_interval.get())
+    for A in se.vec_A1:
+        generate_LU(vecX, HTX, C, A, param.H_R ** 2, 1, quadratic_interval)
+    for A in se.vec_A2:
+        generate_LU(vecX, HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval)
+    interval = quadratic_interval.get()
+    print(interval)
 
     return interval
 
 
-def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval, Z):
+def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval):
     C_center = make_center(C, A.S)
     X_center = make_center(X, A.S)
 
@@ -140,9 +122,7 @@ def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval, Z):
     l = xAx - h
 
     alpha = sgn * (C[A.i] - C_center) ** 2
-    # beta = xAc + xAc - 2 * alpha * HTX
     beta = k - 2 * alpha * HTX
-    # gamma = alpha * (HTX ** 2) - (xAc + xAc) * HTX + sgn * (X[A.i] - X_center) ** 2 - h
     gamma = l - k * HTX + alpha * HTX ** 2
 
     quadratic_interval.cut(alpha, beta, gamma)
@@ -156,26 +136,6 @@ def make_center(vec, S):
         vec_S.append(vec[s])
 
     return mean(vec_S)
-
-
-def generate_LU_by_mat(C, Z, A, c, quadratic_interval):
-    if A.ndim == 1:
-        alpha = 0
-        beta = np.dot(A.T, C)
-        gamma = np.dot(A.T, Z) + c
-    elif A.ndim == 2:
-        alpha = np.dot(np.dot(C.T, A), C)
-        zac = np.dot(np.dot(Z.T, A), C)
-        caz = np.dot(np.dot(C.T, A), Z)
-        beta = zac + caz
-        zaz = np.dot(np.dot(Z.T, A), Z)
-        gamma = zaz + c
-    else:
-        exit()
-
-    quadratic_interval.cut(alpha, beta, gamma)
-
-    return alpha, beta, gamma
 
 
 def generate_selective_p(HTX, sigma, interval):

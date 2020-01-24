@@ -7,18 +7,17 @@ args = sys.argv
 DIF = 0
 MU0 = 128 - DIF/2
 MU1 = 128 + DIF/2
-SIGMA = 10
+SIGMA = 1
 EDGE = 8
 SIZE = int(EDGE ** 2)
 
 # アルゴリズム
-N = 20
-# H_R = 1 * SIGMA
-H_R = 8
+N = 10
+H_R = 1 * SIGMA
 H_S = 2
 
 # その他
 COLOR_RANGE = 256
-EXPERIMENT_NUM = 2
+EXPERIMENT_NUM = 1
 DO_INFERENCE = True
 DO_IMAGE = False
