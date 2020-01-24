@@ -1,24 +1,10 @@
-import numpy as np
 import image_data as data
 import Model.matA as matA
+from SI import selective_inference as si
 
-vec_A1 = []
-vec_A2 = []
-
-def init_vecA():
-    global vec_A1, vec_A2
-    vec_A1 = []
-    vec_A2 = []
-
-
-def derive_mat_A1(x, y, S):
+def derive_mat_A(x, y, S, sgn):
     A = makeA(x, y, S)
-    vec_A1.append(A)
-
-
-def derive_mat_A2(x, y, S):
-    A = makeA(x, y, S)
-    vec_A2.append(A)
+    si.generate_interval(A, sgn)
 
 
 def makeA(x, y, S):
@@ -27,7 +13,6 @@ def makeA(x, y, S):
     for s in S:
         vecS.append(xy_to_i(s[0], s[1]))
     A = matA.A(i, vecS)
-
     return A
 
 

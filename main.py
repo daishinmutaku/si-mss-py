@@ -18,13 +18,15 @@ def main():
 
 def experiment(i):
     data.init_X_origin(i)
-    se.init_vecA()
+    param.DO_INFERENCE = False
     result = mss.segmentation()
     print(result)
-    if param.DO_INFERENCE:
-        selective_p = si.inference(result)
-        if selective_p > 0:
-            csv_writer.csv_write([selective_p])
+    si.inference_ready(result)
+    param.DO_INFERENCE = True
+    _ = mss.segmentation()
+    selective_p = si.generate_selective_p()
+    if selective_p > 0:
+        csv_writer.csv_write([selective_p])
 
 
 if __name__ == "__main__":

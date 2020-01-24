@@ -1,24 +1,27 @@
 # coding: utf-8
 import numpy as np
 import param
-from SI import selection_event as se
 from SI import common_function as c_func
 import image_data as data
 from statistics import mean
 
+H = []
+vecX = np.array([])
+HTX = 0
+sigma = []
+C = []
+quadratic_interval = c_func.QuadraticInterval()
 
-def inference(result):
+
+def inference_ready(result):
+    global H, vecX, HTX, sigma, C, quadratic_interval
     H, err = generate_eta_mat_random(result)
-    if err:
-        return -1
     vecX = data.X_origin.reshape(data.X_origin.shape[0] * data.X_origin.shape[1])
     HTX = np.dot(H, vecX)
-    debug_tau(H, HTX, vecX)
+    if err:
+        return -1
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
-    interval = generate_interval(vecX, HTX, C)
-    selective_p = generate_selective_p(HTX, sigma, interval)
-    return selective_p
 
 
 def generate_eta_mat_sizemax2(result):
@@ -90,44 +93,26 @@ def generate_c_mat(cov_H, sigma):
     return C
 
 
-def generate_z_mat(C, HTX, vecX):
-    Z = vecX - C * HTX
-    return Z
-
-
-def generate_interval(vecX, HTX, C):
+def generate_interval(A, sgn):
     """
     toda's program
     """
 
-    quadratic_interval = c_func.QuadraticInterval()
-    for A in se.vec_A1:
-        generate_LU(vecX, HTX, C, A, param.H_R ** 2, 1, quadratic_interval)
-    for A in se.vec_A2:
-        generate_LU(vecX, HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval)
-    interval = quadratic_interval.get()
-    print(interval)
-
-    return interval
-
-
-def generate_LU(X, HTX, C, A, h, sgn, quadratic_interval):
+    X = vecX
+    h = sgn * param.H_R ** 2
     C_center = make_center(C, A.S)
     X_center = make_center(X, A.S)
 
     # スカラー演算
     xAc = sgn * (X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center)
-    xAx = sgn * (X[A.i] - X_center) ** 2
+    xAx = sgn * (float(X[A.i]) - float(X_center)) ** 2
     k = 2 * xAc
     l = xAx - h
-
     alpha = sgn * (C[A.i] - C_center) ** 2
     beta = k - 2 * alpha * HTX
     gamma = l - k * HTX + alpha * HTX ** 2
 
     quadratic_interval.cut(alpha, beta, gamma)
-
-    return alpha, beta, gamma
 
 
 def make_center(vec, S):
@@ -138,13 +123,13 @@ def make_center(vec, S):
     return mean(vec_S)
 
 
-def generate_selective_p(HTX, sigma, interval):
-    F = c_func.tn_cdf(HTX, interval, var=sigma)
+def generate_selective_p():
+    F = c_func.tn_cdf(HTX, quadratic_interval.get(), var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
 
 
-def debug_tau(H, HTX, vecX):
+def debug_tau():
     area0 = []
     area1 = []
     for i, v in enumerate(H):
