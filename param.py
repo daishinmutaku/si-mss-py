@@ -12,12 +12,12 @@ EDGE = 8
 SIZE = int(EDGE ** 2)
 
 # アルゴリズム
-N = 10
-H_R = 1 * SIGMA
-H_S = 2
+N = 100
+H_R = 8
+H_S = 25
 
 # その他
 COLOR_RANGE = 256
 EXPERIMENT_NUM = 1
 DO_INFERENCE = True
-DO_IMAGE = False
+DO_IMAGE = True

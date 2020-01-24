@@ -14,8 +14,11 @@ def segmentation():
     width = X.shape[1]
     Y = np.zeros((height, width))
     for y in range(height):
+        print("y", y)
         for x in range(width):
+            print("\tx", x)
             Y[y][x] = meanshift(x, y, X)
+            print()
     vec_Y = np.reshape(Y, height * width)
 
     return list(vec_Y)
@@ -26,6 +29,7 @@ def meanshift(x, y, X):
     v = X[y][x]
     S_prev = [(x, y)]
     for n in range(N):
+        print("\r\t\tn", n, "/", N, end='')
         S, x, y, v = make_S(x, y, v, X, S_prev)
         if len(S) == 0:
             break
@@ -51,7 +55,7 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     for y in range(y_min, y_max):
         for x in range(x_min, x_max):
             v = X[y][x]
-            d = abs(v - v_c)
+            d = abs(float(v) - float(v_c))
             if d <= h_r:
                 S.append((x, y))
                 x_sum += x
