@@ -19,7 +19,7 @@ H_S = 2
 # その他
 COLOR_RAGE = 256
 EXPERIMENT_NUM = int(args[2])
-START_I = int(args[1])
+START_I = int(args[1]) * int(args[2])
 
 DO_IMAGE = False
 IS_LOCAL = False
