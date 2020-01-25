@@ -4,9 +4,8 @@ from Algorithm import meanshift_segmentation as mss
 from SI import selective_inference as si
 from SI import selection_event as se
 from IO import csv_writer
-import artificial_data as data
+import image_data as data
 import param
-
 
 
 def main():
@@ -14,14 +13,16 @@ def main():
         start = time.time()
         experiment(i + param.START_I)
         elapsed_time = time.time() - start
-        print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
+        if param.IS_LOCAL:
+            print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 
 
 def experiment(i):
     data.init_X_origin(i)
     se.init_vecA()
     result = mss.segmentation()
-    print(result)
+    if param.IS_LOCAL:
+        print(result)
     if param.DO_INFERENCE:
         selective_p = si.inference(result)
         if selective_p > 0:

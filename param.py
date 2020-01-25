@@ -13,11 +13,28 @@ SIZE = int(EDGE ** 2)
 
 # アルゴリズム
 N = 10
+
+# 人口データ用
 H_R = 1 * SIGMA
 H_S = 3
 
+# 画像用
+# H_R = 8
+# H_S = 25
+
 # その他
 COLOR_RANGE = 256
+
+# 単体テスト
+# EXPERIMENT_NUM = 1
+# START_I = 0
+# DO_INFERENCE = True
+# DO_IMAGE = False
+# IS_LOCAL = True
+
+# shell用
 EXPERIMENT_NUM = int(args[2])
-DO_INFERENCE = True
 START_I = int(args[1]) * int(args[2])
+DO_INFERENCE = True
+DO_IMAGE = False
+IS_LOCAL = False
