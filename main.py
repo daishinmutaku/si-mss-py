@@ -26,7 +26,10 @@ def experiment(i):
     if param.DO_INFERENCE:
         selective_p = si.inference(result)
         if selective_p > 0:
-            csv_writer.csv_write([selective_p])
+            if param.IS_LOCAL:
+                csv_writer.csv_write([selective_p])
+            else:
+                print(selective_p)
 
 
 if __name__ == "__main__":
