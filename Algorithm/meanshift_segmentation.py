@@ -64,10 +64,10 @@ def make_S(x_c, y_c, v_c, X, S_prev):
                 y_sum += y
                 v_sum += v
                 if param.DO_INFERENCE:
-                    se.deriveA1(x, y, S_prev)
+                    se.deriveA(x, y, S_prev, 1)
             else:
                 if param.DO_INFERENCE:
-                    se.deriveA2(x, y, S_prev)
+                    se.deriveA(x, y, S_prev, -1)
     if len(S) == 0:
         return S, x_c, y_c, v_c
 

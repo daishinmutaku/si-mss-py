@@ -1,26 +1,13 @@
 import numpy as np
 import image_data as data
 import Model.A as A_model
-
-vecA1 = []
-vecA2 = []
-
-def init_vecA():
-    global vecA1, vecA2
-    vecA1 = []
-    vecA2 = []
+import SI.selective_inference as si
 
 
-def deriveA1(x, y, S):
+def deriveA(x, y, S, sgn):
     A = makeA(x, y, S)
     # debugA(i, S, A)
-    vecA1.append(A)
-
-
-def deriveA2(x, y, S):
-    A = makeA(x, y, S)
-    # debugA(i, S_v, A)
-    vecA2.append(A)
+    si.generate_interval(A, sgn)
 
 
 def makeA(x, y, S):

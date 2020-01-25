@@ -29,7 +29,7 @@ COLOR_RANGE = 256
 # EXPERIMENT_NUM = 1
 # START_I = 0
 # DO_INFERENCE = False
-# DO_IMAGE = True
+# DO_IMAGE = False
 # IS_LOCAL = True
 
 # shell用
