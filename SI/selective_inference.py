@@ -15,8 +15,7 @@ def inference(result):
     debug_tau(H, HTX, data.vecX)
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
-    Z = generate_z_mat(C, HTX, data.vecX)
-    interval = generate_interval(HTX, C, Z)
+    interval = generate_interval(HTX, C)
     selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
 
@@ -94,20 +93,15 @@ def generate_c_mat(cov_H, sigma):
     return C
 
 
-def generate_z_mat(C, HTX, vecX):
-    Z = vecX - C * HTX
-    return Z
-
-
-def generate_interval(HTX, C, Z):
+def generate_interval(HTX, C):
     """
     toda's program
     """
     quadratic_interval = c_func.QuadraticInterval()
     for A in se.vecA1:
-        generate_LU(HTX, C, A, param.H_R ** 2, 1, quadratic_interval, Z)
+        generate_LU(HTX, C, A, param.H_R ** 2, 1, quadratic_interval)
     for A in se.vecA2:
-        generate_LU(HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval, Z)
+        generate_LU(HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval)
     interval = quadratic_interval.get()
     if param.IS_LOCAL:
         print(interval)
@@ -115,7 +109,7 @@ def generate_interval(HTX, C, Z):
     return interval
 
 
-def generate_LU(HTX, C, A, h, sgn, quadratic_interval, Z):
+def generate_LU(HTX, C, A, h, sgn, quadratic_interval):
     X = data.vecX
     C_center = make_center(C, A.S)
     X_center = make_center(X, A.S)

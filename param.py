@@ -12,7 +12,7 @@ EDGE = 9
 SIZE = int(EDGE ** 2)
 
 # アルゴリズム
-N = 10
+N = 100
 
 # 人口データ用
 H_R = 1 * SIGMA
@@ -29,7 +29,7 @@ COLOR_RANGE = 256
 # EXPERIMENT_NUM = 1
 # START_I = 0
 # DO_INFERENCE = False
-# DO_IMAGE = False
+# DO_IMAGE = True
 # IS_LOCAL = True
 
 # shell用
