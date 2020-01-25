@@ -16,7 +16,7 @@ def inference(result):
     cov_H, sigma = generate_sigma(H)
     C = generate_c_mat(cov_H, sigma)
     Z = generate_z_mat(C, HTX, data.vecX)
-    interval = generate_interval(C, Z)
+    interval = generate_interval(HTX, C, Z)
     selective_p = generate_selective_p(HTX, sigma, interval)
     return selective_p
 
@@ -99,15 +99,15 @@ def generate_z_mat(C, HTX, vecX):
     return Z
 
 
-def generate_interval(C, Z):
+def generate_interval(HTX, C, Z):
     """
     toda's program
     """
     quadratic_interval = c_func.QuadraticInterval()
     for A in se.vecA1:
-        generate_LU(C, Z, A, -(param.H_R ** 2), quadratic_interval)
+        generate_LU(HTX, C, A, param.H_R ** 2, 1, quadratic_interval, Z)
     for A in se.vecA2:
-        generate_LU(C, Z, A, param.H_R ** 2, quadratic_interval)
+        generate_LU(HTX, C, A, -(param.H_R ** 2), -1, quadratic_interval, Z)
     interval = quadratic_interval.get()
     if param.IS_LOCAL:
         print(interval)
@@ -115,21 +115,31 @@ def generate_interval(C, Z):
     return interval
 
 
-def generate_LU(C, Z, A, c, quadratic_interval):
-    if A.ndim == 1:
-        alpha = 0
-        beta = np.dot(A.T, C)
-        gamma = np.dot(A.T, Z) + c
-    elif A.ndim == 2:
-        alpha = np.dot(np.dot(C.T, A), C)
-        zac = np.dot(np.dot(Z.T, A), C)
-        caz = np.dot(np.dot(C.T, A), Z)
-        beta = zac + caz
-        zaz = np.dot(np.dot(Z.T, A), Z)
-        gamma = zaz + c
-    else:
-        exit()
+def generate_LU(HTX, C, A, h, sgn, quadratic_interval, Z):
+    X = data.vecX
+    C_center = make_center(C, A.S)
+    X_center = make_center(X, A.S)
+
+    # スカラー演算
+    xAc = sgn * (X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center)
+    xAx = sgn * (X[A.i] - X_center) ** 2
+    k = 2 * xAc
+    l = xAx - h
+    alpha = sgn * (C[A.i] - C_center) ** 2
+    # beta = xAc + xAc - 2 * alpha * HTX
+    beta = k - 2 * alpha * HTX
+    # gamma = alpha * (HTX ** 2) - (xAc + xAc) * HTX + sgn * (X[A.i] - X_center) ** 2 - h
+    gamma = l - k * HTX + alpha * HTX ** 2
+
     quadratic_interval.cut(alpha, beta, gamma)
+
+
+def make_center(vec, S):
+    vec_S = []
+    for s in S:
+        vec_S.append(vec[s])
+
+    return mean(vec_S)
 
 
 def generate_selective_p(HTX, sigma, interval):

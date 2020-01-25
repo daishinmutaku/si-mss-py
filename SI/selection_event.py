@@ -1,5 +1,6 @@
 import numpy as np
 import image_data as data
+import Model.A as A_model
 
 vecA1 = []
 vecA2 = []
@@ -19,21 +20,15 @@ def deriveA1(x, y, S):
 def deriveA2(x, y, S):
     A = makeA(x, y, S)
     # debugA(i, S_v, A)
-    A *= -1
     vecA2.append(A)
 
 
 def makeA(x, y, S):
     i = xy_to_i(x, y)
-    n = len(data.vecX)
-    e_i = np.zeros(n)
-    e_i[i] = 1
-    S_size = len(S)
-    one_S = np.zeros(n)
+    vecS = []
     for s in S:
-        index = xy_to_i(s[0], s[1])
-        one_S[index] = 1
-    A = np.outer(one_S, one_S) / (S_size ** 2) - (np.outer(e_i, one_S) + np.outer(one_S, e_i)) / S_size + np.outer(e_i, e_i.T)
+        vecS.append(xy_to_i(s[0], s[1]))
+    A = A_model.A_model(i, vecS)
 
     return A
 

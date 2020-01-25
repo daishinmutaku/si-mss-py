@@ -28,7 +28,7 @@ COLOR_RANGE = 256
 # 単体テスト
 # EXPERIMENT_NUM = 1
 # START_I = 0
-# DO_INFERENCE = True
+# DO_INFERENCE = False
 # DO_IMAGE = False
 # IS_LOCAL = True
 
