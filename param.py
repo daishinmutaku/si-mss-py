@@ -18,5 +18,6 @@ H_S = 3
 
 # その他
 COLOR_RANGE = 256
-EXPERIMENT_NUM = 10000
+EXPERIMENT_NUM = int(args[2])
 DO_INFERENCE = True
+START_I = int(args[1]) * int(args[2])

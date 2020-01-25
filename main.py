@@ -12,7 +12,7 @@ import param
 def main():
     for i in range(param.EXPERIMENT_NUM):
         start = time.time()
-        experiment(i)
+        experiment(i + param.START_I)
         elapsed_time = time.time() - start
         print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 

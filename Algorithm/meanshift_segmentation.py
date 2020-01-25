@@ -38,11 +38,11 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     x_sum = 0
     y_sum = 0
     y_min = max(0, math.ceil(y_c - h_s))
-    y_max = max(X.shape[0], math.floor(y_c - h_s))
+    y_max = min(X.shape[0] - 1, math.floor(y_c + h_s))
     x_min = max(0, math.ceil(x_c - h_s))
-    x_max = max(X.shape[1], math.floor(x_c - h_s))
-    for y in range(y_min, y_max):
-        for x in range(x_min, x_max):
+    x_max = min(X.shape[1] - 1, math.floor(x_c + h_s))
+    for y in range(y_min, y_max + 1):
+        for x in range(x_min, x_max + 1):
             v = X[y][x]
             d = abs(v - v_c)
             if d <= h_r:
