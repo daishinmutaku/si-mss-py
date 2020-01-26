@@ -91,6 +91,7 @@ def generate_eta_mat_random(result):
 
 
 def generate_sigma(H):
+    print(param.SIGMA)
     cov = np.identity(len(data.vecX)) * param.SIGMA
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
@@ -135,7 +136,9 @@ def make_center(vec, S):
 
 
 def generate_selective_p():
-    F = c_func.tn_cdf(HTX, quadratic_interval.get(), var=sigma)
+    interval = quadratic_interval.get()
+    print(interval)
+    F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
 

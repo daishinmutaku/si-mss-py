@@ -28,10 +28,11 @@ def experiment(i):
     _ = mss.segmentation()
     selective_p = si.generate_selective_p()
     if selective_p > 0:
-        if param.IS_LOCAL:
-            csv_writer.csv_write([selective_p])
-        else:
-            print(selective_p)
+        print(selective_p)
+        # if param.IS_LOCAL:
+        #     csv_writer.csv_write([selective_p])
+    else:
+        print("error", selective_p)
 
 
 if __name__ == "__main__":
