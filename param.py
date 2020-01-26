@@ -7,8 +7,8 @@ args = sys.argv
 DIF = 0
 MU0 = 128 - DIF/2
 MU1 = 128 + DIF/2
-SIGMA = 1
-EDGE = 9
+SIGMA = 10
+EDGE = 8
 SIZE = int(EDGE ** 2)
 
 # アルゴリズム
@@ -16,11 +16,11 @@ N = 100
 
 # 人口データ用
 # H_R = 1 * SIGMA
-# H_S = 3
+# H_S = 2
 
 # 画像用
-H_S = args[1]
-H_R = args[2]
+H_S = int(args[1])
+H_R = int(args[2])
 
 
 # その他
@@ -31,7 +31,8 @@ EXPERIMENT_NUM = 1
 START_I = 0
 DO_INFERENCE = True
 DO_IMAGE = True
-IS_LOCAL = True
+IS_LOCAL = False
+DO_DEBUG = False
 
 # FPR用
 # EXPERIMENT_NUM = int(args[2])
@@ -39,3 +40,4 @@ IS_LOCAL = True
 # DO_INFERENCE = True
 # DO_IMAGE = False
 # IS_LOCAL = False
+# IS_DEBUG = False

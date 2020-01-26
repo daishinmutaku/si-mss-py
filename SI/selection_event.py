@@ -3,7 +3,6 @@ import image_data as data
 import Model.A as A_model
 import SI.selective_inference as si
 
-
 def deriveA(x, y, S, sgn):
     A = makeA(x, y, S)
     # debugA(i, S, A)

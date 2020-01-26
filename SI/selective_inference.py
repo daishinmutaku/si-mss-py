@@ -45,14 +45,14 @@ def generate_eta_mat_sizemax2(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    if param.IS_LOCAL:
+    if param.DO_DEBUG:
         print("領域数: ", len(H_all))
     if len(H_all) < 2:
         return None, True
     argsorted_count_list = np.array(count_list).argsort()[::-1]
     first_area_index = argsorted_count_list[0]
     second_area_index = argsorted_count_list[1]
-    if param.IS_LOCAL:
+    if param.DO_DEBUG:
         print(count_list)
         print("1番目: ", count_list[first_area_index])
         print("2番目: ", count_list[second_area_index])
@@ -79,7 +79,7 @@ def generate_eta_mat_random(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    if param.IS_LOCAL:
+    if param.DO_DEBUG:
         print("領域数: ", len(H_all))
     if len(H_all) < 2:
         return None, True
@@ -91,11 +91,11 @@ def generate_eta_mat_random(result):
 
 
 def generate_sigma(H):
-    print(param.SIGMA)
     cov = np.identity(len(data.vecX)) * param.SIGMA
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
-    if param.IS_LOCAL:
+    if param.DO_DEBUG:
+        print(param.SIGMA)
         print("分散:", sigma)
     return cov_H, sigma
 
@@ -137,7 +137,8 @@ def make_center(vec, S):
 
 def generate_selective_p():
     interval = quadratic_interval.get()
-    print(interval)
+    if param.DO_DEBUG:
+        print(interval)
     F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
@@ -153,7 +154,7 @@ def debug_tau():
             area1.append(data.vecX[i])
     mean0 = mean(area0)
     mean1 = mean(area1)
-    if param.IS_LOCAL:
+    if param.DO_DEBUG:
         print("領域0の平均: ", mean0)
         print("領域1の平均: ", mean1)
         print("平均の差: ", mean0 - mean1)
