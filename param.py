@@ -20,9 +20,7 @@ N = 100
 
 # 画像用
 H_S = int(args[1])
-H_R = int(args[2])
-# H_S = 10
-# H_R = 32
+H_R = int(args[1])
 
 
 # その他
@@ -42,13 +40,15 @@ COLOR_RANGE = 256
 # DO_INFERENCE = True
 # DO_IMAGE = False
 # IS_LOCAL = False
-# IS_DEBUG = False
+# DO_DEBUG = False
 
 # segmentation用
 EXPERIMENT_NUM = 1
 START_I = 0
-INFERENCE_FLAG = False #触るな危険
-DO_SI = True
+DO_SI = False
 DO_IMAGE = True
 IS_LOCAL = True
-DO_DEBUG = True
+DO_DEBUG = False
+
+#触るな危険
+INFERENCE_FLAG = False

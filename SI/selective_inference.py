@@ -79,8 +79,8 @@ def generate_eta_mat_random(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    if param.DO_DEBUG:
-        print("領域数: ", len(H_all))
+    # if param.DO_DEBUG:
+    print("領域数: ", len(H_all))
     if len(H_all) < 2:
         return None, True
     H = np.array(H_all[0]) / count_list[0]

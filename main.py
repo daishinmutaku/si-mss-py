@@ -9,6 +9,7 @@ import param
 
 def main():
     for i in range(param.EXPERIMENT_NUM):
+        print("h_s: ", param.H_S, ", h_r: ", param.H_R)
         start = time.time()
         experiment(i + param.START_I)
         elapsed_time = time.time() - start

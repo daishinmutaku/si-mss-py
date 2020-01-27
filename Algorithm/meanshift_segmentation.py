@@ -28,10 +28,9 @@ def meanshift(x, y, X):
     x_s = x
     y_s = y
     for n in range(N):
-        if param.DO_DEBUG:
-            if param.IS_LOCAL:
-                print_list = [("y", y_s , data.matX.shape[0]), ("x", x_s , data.matX.shape[1]), ("n", n, N)]
-                update_print(print_list)
+        if param.IS_LOCAL:
+            print_list = [("y", y_s , data.matX.shape[0]), ("x", x_s , data.matX.shape[1]), ("n", n, N)]
+            update_print(print_list)
         S, x, y, v = make_S(x, y, v, X, S_prev)
         if len(S) == 0:
             break
