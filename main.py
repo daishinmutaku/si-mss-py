@@ -19,20 +19,21 @@ def main():
 def experiment(i):
     data.init_X_origin(i)
     si.init_interval()
-    param.DO_INFERENCE = False
+    param.INFERENCE_FLAG = False
     result = mss.segmentation()
-    if param.DO_DEBUG:
-        print(result)
+    # if param.DO_DEBUG:
+        # print(result)
     si.inference_ready(result)
-    param.DO_INFERENCE = True
-    _ = mss.segmentation()
-    selective_p = si.generate_selective_p()
-    if selective_p > 0:
-        print(selective_p)
-        if param.IS_LOCAL:
-            csv_writer.csv_write([selective_p])
-    else:
-        print("error", selective_p)
+    if param.DO_SI:
+        param.INFERENCE_FLAG = True
+        _ = mss.segmentation()
+        selective_p = si.generate_selective_p()
+        if selective_p > 0:
+            print(selective_p)
+            if param.IS_LOCAL:
+                csv_writer.csv_write([selective_p])
+        else:
+            print("error", selective_p)
 
 
 if __name__ == "__main__":

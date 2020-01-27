@@ -155,6 +155,7 @@ def debug_tau():
     mean0 = mean(area0)
     mean1 = mean(area1)
     if param.DO_DEBUG:
+        print("H: ", list(H))
         print("領域0の平均: ", mean0)
         print("領域1の平均: ", mean1)
         print("平均の差: ", mean0 - mean1)
