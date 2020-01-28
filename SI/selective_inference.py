@@ -81,6 +81,7 @@ def generate_eta_mat_random(result):
         count_list[area_num] += 1
     # if param.DO_DEBUG:
     print("領域数: ", len(H_all))
+    debug_segmentation(H_all, result)
     if len(H_all) < 2:
         return None, True
     H = np.array(H_all[0]) / count_list[0]
@@ -88,6 +89,33 @@ def generate_eta_mat_random(result):
         H[i] -= eta / count_list[1]
 
     return H, False
+
+
+def debug_tau():
+    area0 = []
+    area1 = []
+    for i, v in enumerate(H):
+        if v > 0:
+            area0.append(data.vecX[i])
+        elif v < 0:
+            area1.append(data.vecX[i])
+    mean0 = mean(area0)
+    mean1 = mean(area1)
+    if param.DO_DEBUG:
+        print("H: ", list(H))
+        print("領域0の平均: ", mean0)
+        print("領域1の平均: ", mean1)
+        print("平均の差: ", mean0 - mean1)
+        print("検定統計量:", HTX)
+
+
+def debug_segmentation(H_all, result):
+    for H in H_all:
+        area = np.zeros((len(H)))
+        for i, v in enumerate(H):
+            if v > 0:
+                area[i] = round(result[i])
+        print(list(area))
 
 
 def generate_sigma(H):
@@ -137,26 +165,6 @@ def make_center(vec, S):
 
 def generate_selective_p():
     interval = quadratic_interval.get()
-    if param.DO_DEBUG:
-        print(interval)
     F = c_func.tn_cdf(HTX, interval, var=sigma)
     selective_p = 2 * min(F, 1 - F)
     return selective_p
-
-
-def debug_tau():
-    area0 = []
-    area1 = []
-    for i, v in enumerate(H):
-        if v > 0:
-            area0.append(data.vecX[i])
-        elif v < 0:
-            area1.append(data.vecX[i])
-    mean0 = mean(area0)
-    mean1 = mean(area1)
-    if param.DO_DEBUG:
-        print("H: ", list(H))
-        print("領域0の平均: ", mean0)
-        print("領域1の平均: ", mean1)
-        print("平均の差: ", mean0 - mean1)
-        print("検定統計量:", HTX)

@@ -8,6 +8,7 @@ import math
 import copy
 from mpmath import mp
 mp.dps = 3000
+threshold = 1e-10
 
 #----------------------------------------------------------------------
 #切断正規分布の累積分布を計算する関数
@@ -34,6 +35,8 @@ def tn_cdf(x, intervals, mean=0, var=1):
 
   # locate the interval that contains x
   for i in range(n_intervals):
+    if abs(intervals[i][0] - x) < threshold or abs(intervals[i][1] - x) < threshold:
+        return float(0)
     if intervals[i][0] <= x <= intervals[i][1]:
       x_index = i
       break
@@ -79,7 +82,6 @@ class QuadraticInterval():
       b <float> : β or κ
       c <float> : γ or λ
     """
-    threshold = 1e-10
     if -threshold < a < threshold:
       a = 0
     if -threshold < b < threshold:

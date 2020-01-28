@@ -19,8 +19,10 @@ N = 100
 # H_S = 2
 
 # 画像用
-H_S = int(args[1])
-H_R = int(args[1])
+# H_S = int(args[1])
+# H_R = int(args[2])
+H_S = 12
+H_R = 32
 
 
 # その他
@@ -48,7 +50,7 @@ START_I = 0
 DO_SI = False
 DO_IMAGE = True
 IS_LOCAL = True
-DO_DEBUG = False
+DO_DEBUG = True
 
 #触るな危険
 INFERENCE_FLAG = False

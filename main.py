@@ -22,19 +22,22 @@ def experiment(i):
     si.init_interval()
     param.INFERENCE_FLAG = False
     result = mss.segmentation()
-    # if param.DO_DEBUG:
-        # print(result)
+    if param.DO_DEBUG:
+        result_round = []
+        for res in result:
+            result_round.append(round(res))
+        print(result_round)
     si.inference_ready(result)
     if param.DO_SI:
         param.INFERENCE_FLAG = True
         _ = mss.segmentation()
         selective_p = si.generate_selective_p()
-        if selective_p > 0:
+        if selective_p < 0:
+            print("error", selective_p)
+        else:
             print(selective_p)
             if param.IS_LOCAL:
                 csv_writer.csv_write([selective_p])
-        else:
-            print("error", selective_p)
 
 
 if __name__ == "__main__":
