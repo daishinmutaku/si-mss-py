@@ -9,7 +9,7 @@ import param
 
 def main():
     for i in range(param.EXPERIMENT_NUM):
-        print("h_s: ", param.H_S, ", h_r: ", param.H_R)
+        # print("h_s: ", param.H_S, ", h_r: ", param.H_R)
         start = time.time()
         experiment(i + param.START_I)
         elapsed_time = time.time() - start
@@ -19,25 +19,24 @@ def main():
 
 def experiment(i):
     data.init_X_origin(i)
-    si.init_interval()
+    si.init_si()
     param.INFERENCE_FLAG = False
     result = mss.segmentation()
-    if param.DO_DEBUG:
-        result_round = []
-        for res in result:
-            result_round.append(round(res))
-        print(result_round)
-    si.inference_ready(result)
+    test_count = si.inference_ready(result)
+    print("naive-p: ", si.naive_p())
     if param.DO_SI:
         param.INFERENCE_FLAG = True
-        _ = mss.segmentation()
-        selective_p = si.generate_selective_p()
-        if selective_p < 0:
-            print("error", selective_p)
-        else:
-            print(selective_p)
-            if param.IS_LOCAL:
-                csv_writer.csv_write([selective_p])
+        for n in range(test_count):
+            param.TEST_NUM = n
+            si.init_interval()
+            _ = mss.segmentation()
+            selective_p = si.generate_selective_p()
+            if selective_p < 0:
+                print("error_value: ", selective_p)
+            else:
+                print(selective_p)
+                if param.IS_LOCAL:
+                    csv_writer.csv_write([selective_p])
 
 
 if __name__ == "__main__":

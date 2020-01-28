@@ -11,7 +11,7 @@ def init_X_origin(i):
     global matX, vecX
     if param.DO_IMAGE:
         if param.IS_LOCAL:
-            matX = np.array(Image.open('/Users/oomoriyumehiro/lab/Seminar/mss-python/Image/15341_4_25.tif').convert('L'), np.float64)
+            matX = np.array(Image.open('/Users/oomoriyumehiro/lab/Seminar/mss-python/Image/15341_2_3_25.jpg').convert('L'), np.float64)
         else:
             matX = np.array(Image.open('/home/omori.y//Image/15341_4.tif').convert('L'), np.float64)
         vecX = np.reshape(matX, (matX.size))
