@@ -28,9 +28,9 @@ def meanshift(x, y, X):
     x_s = x
     y_s = y
     for n in range(N):
-        # if param.IS_LOCAL:
-        #     print_list = [("y", y_s , data.matX.shape[0]), ("x", x_s , data.matX.shape[1]), ("n", n, N)]
-        #     update_print(print_list)
+        if param.IS_LOCAL:
+            print_list = [("y", y_s , data.matX.shape[0]), ("x", x_s , data.matX.shape[1]), ("n", n, N)]
+            update_print(print_list)
         S, x, y, v = make_S(x, y, v, X, S_prev)
         if len(S) == 0:
             break
@@ -55,7 +55,6 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     x_max = min(X.shape[1] - 1, math.floor(x_c + h_s))
     for y in range(y_min, y_max + 1):
         for x in range(x_min, x_max + 1):
-
             v = X[y][x]
             d = abs(v - v_c)
             if d <= h_r:
@@ -89,5 +88,6 @@ def update_print(list):
         print("{0}: ".format(t[0]), end="")
         s = "{0}/{1}".format(t[1], t[2])
         digit = len(str(t[2]))
-        print(s.rjust(digit * 2 + 1, ' '))
+        print(s.rjust(digit * 2 + 1, ' '), end="")
+        print('          ')
     print("\u001B[{0}A".format(list_size), end="")

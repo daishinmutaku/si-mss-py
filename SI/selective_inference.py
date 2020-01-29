@@ -5,6 +5,9 @@ from SI import common_function as c_func
 import image_data as data
 from statistics import mean
 from scipy import stats
+from mpmath import mp
+mp.dps = 3000
+
 
 
 H_list = []
@@ -30,8 +33,8 @@ def init_interval():
 
 def inference_ready(result):
     global H_list, HTX_list, sigma_list, C_list
-    # H_list, err = generate_eta_mat_random(result)
-    H_list, err = generate_eta_mat_all(result)
+    H_list, err = generate_eta_mat_random(result)
+    # H_list, err = generate_eta_mat_all(result)
     if err:
         return -1
     for H in H_list:
@@ -118,11 +121,11 @@ def debug_tau():
         mean1 = mean(area1)
         if param.DO_DEBUG:
             print("{}番目の検定問題".format(i))
-            print("\t領域0の平均: ", mean0)
-            print("\t領域1の平均: ", mean1)
-            print("\t平均の差: ", mean0 - mean1)
-            print("\t検定統計量:", HTX_list[i])
-            print("\tsiの分散:", sigma_list[i])
+            print("領域0の平均: ", mean0)
+            print("領域1の平均: ", mean1)
+            print("平均の差: ", mean0 - mean1)
+            print("検定統計量:", HTX_list[i])
+            print("siの分散:", sigma_list[i])
 
 
 def debug_segmentation(H_all, result):
@@ -155,21 +158,35 @@ def generate_interval(A, sgn):
     """
     n = param.TEST_NUM
     C = C_list[n]
+    debug_type("C", C)
     HTX = HTX_list[n]
+    debug_type("HTX", HTX)
 
     X = data.vecX
     h = sgn * param.H_R ** 2
     C_center = make_center(C, A.S)
+    debug_type("C_center", C_center)
     X_center = make_center(X, A.S)
+    debug_type("X_center", X_center)
 
     # スカラー演算
     xAc = sgn * (X[A.i] * C[A.i] - X[A.i] * C_center - X_center * C[A.i] + X_center * C_center)
+    debug_type("xAc", xAc)
     xAx = sgn * (X[A.i] - X_center) ** 2
+    debug_type("xAx", xAx)
     k = 2 * xAc
+    debug_type("k", k)
     l = xAx - h
+    if l > 0:
+        print("lambda: ", l)
+        exit()
+    debug_type("l", l)
     alpha = sgn * (C[A.i] - C_center) ** 2
+    debug_type("alpha", alpha)
     beta = k - 2 * alpha * HTX
+    debug_type("beta", beta)
     gamma = l - k * HTX + alpha * HTX ** 2
+    debug_type("gamma", gamma)
 
     quadratic_interval.cut(alpha, beta, gamma)
 
@@ -178,8 +195,7 @@ def make_center(vec, S):
     vec_S = []
     for s in S:
         vec_S.append(vec[s])
-
-    return mean(vec_S)
+    return mp.fsum(vec_S) / len(vec_S)
 
 
 def generate_selective_p():
@@ -188,9 +204,21 @@ def generate_selective_p():
     if param.DO_DEBUG:
         print(interval)
     F = c_func.tn_cdf(HTX_list[n], interval, var=sigma_list[n])
-    selective_p = 2 * min(F, 1 - F)
+    selective_p = 2 * mp_min(F, 1 - F)
     return selective_p
 
 
 def naive_p():
     return 2 * min(stats.norm.cdf(HTX_list[param.TEST_NUM], scale=np.sqrt(sigma_list[param.TEST_NUM])), 1 - stats.norm.cdf(HTX_list[param.TEST_NUM], scale=np.sqrt(sigma_list[param.TEST_NUM])))
+
+
+def debug_type(name, obj):
+    if not param.DO_DEBUG:
+        print("{0}={1}:{2}".format(name, obj, type(obj)))
+
+
+def mp_min(a, b):
+    if a > b:
+      return b
+    else:
+      return a

@@ -23,7 +23,7 @@ def experiment(i):
     param.INFERENCE_FLAG = False
     result = mss.segmentation()
     test_count = si.inference_ready(result)
-    print("naive-p: ", si.naive_p())
+    # print(si.naive_p(), ",", end=" ")
     if param.DO_SI:
         param.INFERENCE_FLAG = True
         for n in range(test_count):

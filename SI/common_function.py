@@ -4,11 +4,9 @@ Commonly used functions and classes
 """
 
 import numpy as np
-import math
 import copy
 from mpmath import mp
 mp.dps = 3000
-threshold = 1e-10
 
 #----------------------------------------------------------------------
 #切断正規分布の累積分布を計算する関数
@@ -25,18 +23,21 @@ def tn_cdf(x, intervals, mean=0, var=1):
   [Returns]
     float : CDF of TN
   """
+  x = mp.mpf(x)
   intervals = np.array(intervals)
 
   if len(intervals.shape) == 1:
-    intervals = np.array([intervals,])
+    intervals = np.array([intervals])
 
   n_intervals = len(intervals)  # number of intervals
-  sd = math.sqrt(var)  # standard deviation
+  sd = mp.sqrt(var)  # standard deviation
+
 
   # locate the interval that contains x
+  threshold = 1e-15
   for i in range(n_intervals):
-    if abs(intervals[i][0] - x) < threshold or abs(intervals[i][1] - x) < threshold:
-        return float(0)
+    # if abs(intervals[i][0] - x) < threshold or abs(intervals[i][1] - x) < threshold:
+    #     return float(0)
     if intervals[i][0] <= x <= intervals[i][1]:
       x_index = i
       break
@@ -55,7 +56,8 @@ def tn_cdf(x, intervals, mean=0, var=1):
   numerator = mp.ncdf((x-mean)/sd) - mp.ncdf(norm_intervals[x_index][0]) + delta[x_index]
   denominator = delta[-1]
 
-  return float(numerator / denominator)
+  return mp.mpf(numerator / denominator)
+
 
 #----------------------------------------------------------------------
 
@@ -67,7 +69,7 @@ class QuadraticInterval():
   [Constructor]
     tau <float> : Set tau=0 unless we consider E(z)=∩{ατ^2+κτ+λ≦0}.      κ,λ are function of c,x.
   """
-  def __init__(self, tau=0, init_lower=-float('inf'), init_upper=float('inf')):
+  def __init__(self, tau=0, init_lower=-mp.mpf('inf'), init_upper=mp.mpf('inf')):
     self.tau = tau
     self.lower = init_lower
     self.upper = init_upper
@@ -82,6 +84,7 @@ class QuadraticInterval():
       b <float> : β or κ
       c <float> : γ or λ
     """
+    threshold = 1e-10
     if -threshold < a < threshold:
       a = 0
     if -threshold < b < threshold:
@@ -89,25 +92,31 @@ class QuadraticInterval():
     if -threshold < c < threshold:
       c = 0
 
+    a = mp.mpf(a)
+    b = mp.mpf(b)
+    c = mp.mpf(c)
+
     if a == 0:
       if b == 0:
         return
       elif b < 0:
-        self.lower = max(self.lower, -c/b + self.tau)
+        self.lower = self.mp_max(self.lower, -c/b + self.tau)
       elif b > 0:
-        self.upper = min(self.upper, -c/b + self.tau)
+        self.upper = self.mp_min(self.upper, -c/b + self.tau)
       # print("\t", self.lower, self.upper)
     elif a > 0:
       disc = b**2 - 4*a*c  # discriminant
-      self.lower = max(self.lower, (-b-math.sqrt(disc)) / (2*a) + self.tau)
-      self.upper = min(self.upper, (-b+math.sqrt(disc)) / (2*a) + self.tau)
+      disc_sqrt = mp.sqrt(disc)
+      self.lower = self.mp_max(self.lower, (-b-disc_sqrt) / (2*a) + self.tau)
+      self.upper = self.mp_min(self.upper, (-b+disc_sqrt) / (2*a) + self.tau)
       # print("\t", self.lower, self.upper)
     else:
       disc = b**2 - 4*a*c  # discriminant
       if disc <= 0:  # no solution
         return
-      lower = (-b+math.sqrt(disc)) / (2*a) + self.tau
-      upper = (-b-math.sqrt(disc)) / (2*a) + self.tau
+      disc_sqrt = mp.sqrt(disc)
+      lower = (-b+disc_sqrt) / (2*a) + self.tau
+      upper = (-b-disc_sqrt) / (2*a) + self.tau
 
       # To reduce the calculation cost in _concave_cut,
       # truncate the interval if it's possible at this moment
@@ -118,7 +127,9 @@ class QuadraticInterval():
       elif self.lower < lower and upper < self.upper:
         # The interval is splitted into 2 parts at this moment
         self.concave_intervals.append((lower, upper))
-      # print("\t", self.lower, self.upper)
+      if  self.lower > self.upper:
+        print(self.upper - self.lower)
+        exit()
 
 
   def _concave_cut(self):
@@ -177,3 +188,15 @@ class QuadraticInterval():
       numpy.ndarray
     """
     return self._concave_cut()
+
+  def mp_max(self, a, b):
+    if a < b:
+      return b
+    else:
+      return a
+
+  def mp_min(self, a, b):
+    if a > b:
+      return b
+    else:
+      return a

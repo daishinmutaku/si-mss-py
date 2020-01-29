@@ -7,22 +7,22 @@ args = sys.argv
 DIF = 0
 MU0 = 128 - DIF/2
 MU1 = 128 + DIF/2
-SIGMA = 10
-EDGE = 8
+SIGMA = 1
+EDGE = 25
 SIZE = int(EDGE ** 2)
 
 # アルゴリズム
-N = 100
+N = 2
 
 # 人口データ用
 # H_R = 1 * SIGMA
-# H_S = 2
+# H_S = 3
 
 # 画像用
 # H_S = int(args[1])
 # H_R = int(args[2])
-H_S = 13
-H_R = 9
+H_S = 12
+H_R = 128 / 256
 
 
 # その他
