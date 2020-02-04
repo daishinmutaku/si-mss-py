@@ -6,7 +6,7 @@ import image_data as data
 from statistics import mean
 from scipy import stats
 from mpmath import mp
-mp.dps = 3000
+mp.dps = 10000
 
 
 
@@ -33,8 +33,8 @@ def init_interval():
 
 def inference_ready(result):
     global H_list, HTX_list, sigma_list, C_list
-    H_list, err = generate_eta_mat_random(result)
-    # H_list, err = generate_eta_mat_all(result)
+    # H_list, err = generate_eta_mat_random(result)
+    H_list, err = generate_eta_mat_all(result)
     if err:
         return -1
     for H in H_list:
@@ -62,14 +62,14 @@ def generate_eta_mat_random(result):
         eta[index] += 1
         count_list[area_num] += 1
     # if param.DO_DEBUG:
-    print("データの分散", param.SIGMA)
+    # print("データの分散", param.SIGMA)
     print("領域数: ", len(H_all))
     debug_segmentation(H_all, result)
     if len(H_all) < 2:
         return None, True
-    H = np.array(H_all[0]) / count_list[0]
+    H = np.array(H_all[0]) / mp.mpf(count_list[0])
     for i, eta in enumerate(np.array(H_all[1])):
-        H[i] -= eta / count_list[1]
+        H[i] -= mp.mpf(eta) / count_list[1]
 
     return [H], False
 
@@ -89,9 +89,9 @@ def generate_eta_mat_all(result):
         eta = H_all[area_num]
         eta[index] += 1
         count_list[area_num] += 1
-    # if param.DO_DEBUG:
-    # print("領域数: ", len(H_all))
-    debug_segmentation(H_all, result)
+    if param.DO_DEBUG:
+        print("領域数: ", len(H_all))
+    # debug_segmentation(H_all, result)
     if len(H_all) < 2:
         return None, True
     for i in range(len(H_all)):
@@ -102,9 +102,9 @@ def generate_eta_mat_all(result):
 
 
 def make_H(H_all, count_list, i0, i1):
-    H = np.array(H_all[i0]) / count_list[i0]
+    H = np.array(H_all[i0]) / mp.mpf(count_list[i0])
     for i, eta in enumerate(np.array(H_all[i1])):
-        H[i] -= eta / count_list[i1]
+        H[i] -= eta / mp.mpf(count_list[i1])
     return H
 
 
@@ -136,11 +136,11 @@ def debug_segmentation(H_all, result):
             if v > 0:
                 origin[i] = data.vecX[i]
                 area[i] = round(result[i])
-        # print(list(area))
+        print(list(area))
         # print(list(origin))
 
 def generate_sigma(H):
-    cov = np.identity(len(data.vecX)) * param.SIGMA
+    cov = np.identity(len(data.vecX)) * mp.mpf(param.SIGMA)
     cov_H = np.dot(cov, H)
     sigma = np.dot(H, cov_H)
 
@@ -209,7 +209,7 @@ def generate_selective_p():
 
 
 def naive_p():
-    return 2 * min(stats.norm.cdf(HTX_list[param.TEST_NUM], scale=np.sqrt(sigma_list[param.TEST_NUM])), 1 - stats.norm.cdf(HTX_list[param.TEST_NUM], scale=np.sqrt(sigma_list[param.TEST_NUM])))
+    return 2 * min(stats.norm.cdf(float(HTX_list[param.TEST_NUM]), scale=np.sqrt(float(sigma_list[param.TEST_NUM]))), 1 - stats.norm.cdf(float(HTX_list[param.TEST_NUM]), scale=np.sqrt(float(sigma_list[param.TEST_NUM]))))
 
 
 def debug_type(name, obj):

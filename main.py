@@ -9,7 +9,9 @@ import param
 
 def main():
     for i in range(param.EXPERIMENT_NUM):
-        # print("h_s: ", param.H_S, ", h_r: ", param.H_R)
+        print(param.N)
+        print(param.H_S)
+        print(param.H_R)
         start = time.time()
         experiment(i + param.START_I)
         elapsed_time = time.time() - start
@@ -22,8 +24,9 @@ def experiment(i):
     si.init_si()
     param.INFERENCE_FLAG = False
     result = mss.segmentation()
+    print(list(256 * result))
     test_count = si.inference_ready(result)
-    # print(si.naive_p(), ",", end=" ")
+    # csv_writer.csv_write([si.naive_p()])
     if param.DO_SI:
         param.INFERENCE_FLAG = True
         for n in range(test_count):

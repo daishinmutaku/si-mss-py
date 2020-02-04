@@ -1,6 +1,5 @@
 #!/bin/bash
 
-### 時間測定したい処理
 for i in 13; do
     for j in 9; do
         /Users/oomoriyumehiro/.pyenv/shims/python ./main.py $i $j

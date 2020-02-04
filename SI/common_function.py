@@ -6,7 +6,7 @@ Commonly used functions and classes
 import numpy as np
 import copy
 from mpmath import mp
-mp.dps = 3000
+mp.dps = 10000
 
 #----------------------------------------------------------------------
 #切断正規分布の累積分布を計算する関数
@@ -34,10 +34,11 @@ def tn_cdf(x, intervals, mean=0, var=1):
 
 
   # locate the interval that contains x
-  threshold = 1e-15
+  threshold = 1e-18
   for i in range(n_intervals):
-    # if abs(intervals[i][0] - x) < threshold or abs(intervals[i][1] - x) < threshold:
-    #     return float(0)
+    if intervals[i][0] - x < threshold or x - intervals[i][1] < threshold:
+        print("丸め込み")
+        return float(0)
     if intervals[i][0] <= x <= intervals[i][1]:
       x_index = i
       break
@@ -127,8 +128,11 @@ class QuadraticInterval():
       elif self.lower < lower and upper < self.upper:
         # The interval is splitted into 2 parts at this moment
         self.concave_intervals.append((lower, upper))
-      if  self.lower > self.upper:
-        print(self.upper - self.lower)
+      if self.lower > self.upper:
+        print("区間バグ", self.upper - self.lower)
+        print([self.lower, self.upper])
+        print("disc: ", disc)
+        print("disc: ", disc_sqrt)
         exit()
 
 

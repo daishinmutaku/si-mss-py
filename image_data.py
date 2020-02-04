@@ -21,3 +21,4 @@ def init_X_origin(i):
         vecX = np.random.normal(param.MU0, param.SIGMA, param.SIZE) / param.COLOR_RANGE
         matX = np.reshape(np.array(vecX), (param.EDGE, param.EDGE))
     # X_origin = np.concatenate([np.random.normal(param.MU0, param.SIGMA, int(param.SIZE/2)), np.random.normal(param.MU1, param.SIGMA, int(param.SIZE/2))], 0)
+    # print(list(256 * vecX))

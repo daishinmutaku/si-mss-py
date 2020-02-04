@@ -5,20 +5,22 @@ from SI import selection_event as se
 import image_data as data
 import numpy as np
 import math
-
+from mpmath import mp
+mp.dps = 10000
 
 # SI対象のアルゴリズム
 def segmentation():
     X = data.matX
     height = X.shape[0]
     width = X.shape[1]
-    Y = np.zeros((height, width))
+    # print(list(256 * data.vecX))
+    Y = np.zeros((height, width), dtype=object)
     for y in range(height):
         for x in range(width):
             Y[y][x] = meanshift(x, y, X)
     vec_Y = np.reshape(Y, height * width)
 
-    return list(vec_Y)
+    return vec_Y
 
 
 def meanshift(x, y, X):
@@ -70,9 +72,9 @@ def make_S(x_c, y_c, v_c, X, S_prev):
     if len(S) == 0:
         return S, x_c, y_c, v_c
 
-    x_mean = x_sum / len(S)
-    y_mean = y_sum / len(S)
-    v_mean = v_sum / len(S)
+    x_mean = x_sum / mp.mpf(len(S))
+    y_mean = y_sum / mp.mpf(len(S))
+    v_mean = v_sum / mp.mpf(len(S))
 
     return S, x_mean, y_mean, v_mean
 
